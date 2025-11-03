@@ -1,6 +1,6 @@
 import React from 'react';
 import './LibraryDesign.css';
-import { FiHeart } from "react-icons/fi";
+// import { FiHeart } from "react-icons/fi";
 // import api from '../api/axiosInstance';
 
 export default function LibraryDesign({prop}) {
@@ -28,7 +28,8 @@ export default function LibraryDesign({prop}) {
               <div className="song-row" key={i}>
                 <img src="https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900" alt="Song_poster" />
                 <div>Everyday <span>Ariana Grande</span></div>
-                <div className='like-icon' onClick={handleLike}><FiHeart className='heart-icon' /></div>
+                <div className='like-icon' onClick={handleLike}>
+                </div>
               </div>
             ))}
           </div>
