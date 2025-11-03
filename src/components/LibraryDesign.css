@@ -1,12 +1,11 @@
-
 .page-container {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  overflow-y: hidden;
   width: 100%;
-  height: 100%;
-  max-height: 75vh;
+  /* REMOVED: height, max-height, and overflow-y.
+    This container will now grow as tall as its content needs to be.
+  */
   box-sizing: border-box;  
 }
 
@@ -26,7 +25,6 @@
   gap: 3%;
   width: 100%;
   overflow: hidden;
-  /* background-color: #a259ff; */
   flex-grow: 1;
   align-items: center;
   justify-content: center;
@@ -40,8 +38,7 @@
   max-width: 50%;
   box-sizing: border-box;
   padding: 6px;
-  height: 60vh;
-  overflow-y: scroll; 
+  /* REMOVED: height and overflow-y */
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
@@ -57,16 +54,13 @@
 }
 
 .playlist-content {
-  /* MODIFIED: Changed from inline-flex to flex */
   display: flex;
   flex-direction: column;
-  overflow-y: scroll; /* This is the only vertical scroll */
+  /* REMOVED: overflow-y */
   scrollbar-width: none;
   width: 100%;
   background-color: #212121;
-  /* MODIFIED: Added flex-grow to fill the .playlist container */
   flex-grow: 1;
-  /* MODIFIED: Prevents flex items from overflowing */
   min-height: 0;
 }
 
@@ -80,7 +74,6 @@
 }
 
 .song-row:hover{
-  /* transform: scale(1.05) translateY(3px); */
   transition: transform 0.3s ease;
   background-color: #31314e;
 }
@@ -124,8 +117,7 @@
   max-width: 100%;
   box-sizing: border-box;
   padding: 6px;
-  height: 60vh;
-  overflow-y: scroll; 
+  /* REMOVED: height and overflow-y */
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
@@ -144,11 +136,9 @@
   display: flex;
   flex-direction: row;
   flex-wrap:wrap;
-  overflow-y: scroll;
+  /* REMOVED: overflow-y */
   scrollbar-width: none;
-  /* width: 97%; */
   gap: 10px;
-  /* background-color: #212121; */
   padding: 10px 5px;
   justify-content: center;
 }
@@ -156,9 +146,9 @@
 .menu-tile {
   flex: 0 0 140px;
   display: flex;
-  flex-direction: column; /* stack image and text vertically */
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* keep text below image */
+  justify-content: flex-start;
   gap: 8px;
   padding: 8px;
   border-radius: 6px;
@@ -176,7 +166,7 @@
 }
 .menu-tile img {
   width: 100%;
-  height: 130px; /* keep consistent image height */
+  height: 130px;
   object-fit: cover;
   border-radius: 4px;
 }

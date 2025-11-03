@@ -1,20 +1,29 @@
-import React from 'react';
+// MainHomePage.js
+import React, { useState } from 'react';
 import TopHeader from './components/TopHeader';
 import SideNavbar from './components/SideNavbar';
 import MainPageBody from './components/MainPageBody';
 import StickyAudioBar from './AudioPlayer';
 import './MainHomePage.css';
+import { useState } from 'react';
 
 function MainHomePage({ songData }) {
+  // ✅ Added state for current page
+  const [currentPage, setCurrentPage] = useState("home");
+
   return (
     <div className="App">
       <TopHeader />
       <div className="main-content">
-        <SideNavbar />
+        {/* ✅ Pass setCurrentPage to SideNavbar */}
+        <SideNavbar setCurrentPage={setCurrentPage} />
+        
+        {/* ✅ Pass currentPage to MainPageBody */}
         <div className="page-body">
-          <MainPageBody />
+          <MainPageBody currentPage={currentPage} />
         </div>
       </div>
+
       <div className="audio-bar">
         <div className="song-info">
           <img

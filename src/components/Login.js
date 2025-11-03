@@ -3,7 +3,7 @@ import './Login.css';
 import loginImage from './login-image.png';
 import { useNavigate } from 'react-router-dom';
 
-function Login({ onLogin }) {
+function Login({ onLogin }) { // Get onLogin prop
   const navigate = useNavigate();
   const [input, setInput] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +22,8 @@ function Login({ onLogin }) {
 
     if (storedUser && storedUser.email === input.email && storedUser.password === input.password) {
       alert("Login successful!");
-      onLogin();
+      // MODIFIED: Call the onLogin function passed from App.js
+      onLogin(); 
     } else {
       alert("Invalid email or password");
     }

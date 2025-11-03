@@ -3,7 +3,8 @@ import './LibraryDesign.css';
 // import { FiHeart } from "react-icons/fi";
 // import api from '../api/axiosInstance';
 
-export default function LibraryDesign({prop}) {
+// Add a default value to {prop} here
+export default function LibraryDesign({prop = { playlistTitle: "My Playlist", gridTitle: "Liked Songs" }}) {
   const handleLike = async (song) => {""}
 //   try {
 //     await api.post("/songs/liked", song);
@@ -22,6 +23,7 @@ export default function LibraryDesign({prop}) {
 
       <div className='playlist-grid'>
         <div className='playlist'>
+          {/* This line will no longer cause an error */}
           <div className='playlist-head'>{prop.playlistTitle}</div>
           <div className='playlist-content'>
             {[...Array(8)].map((_, i) => (
@@ -36,6 +38,7 @@ export default function LibraryDesign({prop}) {
         </div>
 
         <div className='grid-menus'>
+          {/* This line will also no longer cause an error */}
           <div className='grid-menu-head'>{prop.gridTitle}</div>
           <div className='grid-menu-content'>
             {[...Array(10)].map((_, i) => (
