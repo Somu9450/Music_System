@@ -6,24 +6,38 @@ import Artists from "./Artists";
 import Genre from "./Genre";
 import LibraryDesign from "./LibraryDesign";
 
-export default function MainPageBody({ currentPage, setIsAudioBarVisible }) {
+// Point 3: Accept and pass setCurrentSong
+export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCurrentSong }) {
   
-  // Point 2 & 3: Determine conditional classes for the page body
   const pageBodyClass = currentPage === "library" ? "page-body-library" : "page-body-home";
 
   return (
-    // Point 2 & 3: Apply the conditional class
     <div className={`main-page-body ${pageBodyClass}`}>
       {currentPage === "library" ? (
-        <LibraryDesign setIsAudioBarVisible={setIsAudioBarVisible} />
+        <LibraryDesign 
+          setIsAudioBarVisible={setIsAudioBarVisible} 
+          setCurrentSong={setCurrentSong} 
+        />
       ) : (
         <>
           <BannerSection />
-          <RecentlyPlayed setIsAudioBarVisible={setIsAudioBarVisible} />
-          <RecommendedSongs setIsAudioBarVisible={setIsAudioBarVisible} />
-          <Artists setIsAudioBarVisible={setIsAudioBarVisible} />
+          <RecentlyPlayed 
+            setIsAudioBarVisible={setIsAudioBarVisible} 
+            setCurrentSong={setCurrentSong} 
+          />
+          <RecommendedSongs 
+            setIsAudioBarVisible={setIsAudioBarVisible} 
+            setCurrentSong={setCurrentSong} 
+          />
+          <Artists 
+            setIsAudioBarVisible={setIsAudioBarVisible} 
+            setCurrentSong={setCurrentSong} 
+          />
           <div id="genre-section">
-            <Genre setIsAudioBarVisible={setIsAudioBarVisible} />
+            <Genre 
+              setIsAudioBarVisible={setIsAudioBarVisible} 
+              setCurrentSong={setCurrentSong} 
+            />
           </div>
         </>
       )}

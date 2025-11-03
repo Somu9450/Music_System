@@ -2,13 +2,18 @@ import React from 'react'
 import SongGrid from './SongGrid'
 import './RecentlyPlayed.css'
 
-export default function RecentlyPlayed({ setIsAudioBarVisible }) {
+// Point 3: Pass setCurrentSong
+export default function RecentlyPlayed({ setIsAudioBarVisible, setCurrentSong }) {
   return (
     <div className='recently-played'>
             
             <div>
-                {/* Point 2: Added showSeeAll={false} */}
-                <SongGrid prop="Recently Played" setIsAudioBarVisible={setIsAudioBarVisible} showSeeAll={false} />
+                <SongGrid 
+                  prop="Recently Played" 
+                  setIsAudioBarVisible={setIsAudioBarVisible} 
+                  showSeeAll={false} 
+                  setCurrentSong={setCurrentSong}
+                />
             </div>
         </div>
   )

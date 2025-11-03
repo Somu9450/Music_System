@@ -2,13 +2,18 @@ import React from 'react'
 import SongGrid from './SongGrid'
 import './Genre.css'
 
-export default function Genre({ setIsAudioBarVisible }) {
+// Point 3: Pass setCurrentSong
+export default function Genre({ setIsAudioBarVisible, setCurrentSong }) {
   return (
     <div className='genre'>
             
             <div>
-                {/* Point 2: Added showSeeAll={false} */}
-                <SongGrid prop="Genre" setIsAudioBarVisible={setIsAudioBarVisible} showSeeAll={false} />
+                <SongGrid 
+                  prop="Genre" 
+                  setIsAudioBarVisible={setIsAudioBarVisible} 
+                  showSeeAll={false} 
+                  setCurrentSong={setCurrentSong}
+                />
             </div>
         </div>
   )

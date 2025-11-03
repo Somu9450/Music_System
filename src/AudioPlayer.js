@@ -1,11 +1,12 @@
 import React from 'react';
 
-function AudioPlayer() {
+// Point 3: Accept songSrc prop
+function AudioPlayer({ songSrc }) {
   return (
     <div className="audio-player-container">
-      {/* MODIFIED: Removed inline style */}
-      <audio controls>
-        <source src="https://p.scdn.co/mp3-preview/5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b?cid=774b29d4f13844c495f206cafdad9c86" type="audio/mpeg" />
+      {/* Point 3: Use songSrc and add a key to force re-render on change */}
+      <audio controls autoPlay key={songSrc}>
+        <source src={songSrc} type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
     </div>

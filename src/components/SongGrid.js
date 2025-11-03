@@ -4,8 +4,16 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
 
-// Point 2: Added showSeeAll prop
-export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true }) {
+// Point 3: Mock data for grid
+const mockSong = {
+  name: "Everyday",
+  artist: "Ariana Grande",
+  image: "https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900",
+  src: "https://p.scdn.co/mp3-preview/5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b?cid=774b29d4f13844c495f206cafdad9c86"
+};
+
+// Point 3: Accept setCurrentSong
+export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true, setCurrentSong }) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
@@ -17,15 +25,14 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
     scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
+  // Point 3: Update to set song
   const handleTileClick = () => {
     if (setIsAudioBarVisible) {
       setIsAudioBarVisible(true);
     }
-    // Don't navigate if it's just a song click
-    // navigate(`/library/${prop}`);
+    setCurrentSong(mockSong); // Set mock song
   };
 
-  // Point 2: Separate handler for "See All"
   const handleSeeAllClick = () => {
      navigate(`/library/${prop}`);
   };
@@ -34,7 +41,6 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
     <>
       <div className="grid-header">
         <div className='grid-name'><span>{prop}</span></div>
-        {/* Point 2: Conditionally render "See All" */}
         {showSeeAll && (
           <div className="see-all" onClick={handleSeeAllClick}>See All</div>
         )}
@@ -45,9 +51,9 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
         <div className="song-grid" ref={scrollRef}>
           {[...Array(10)].map((_, i) => (
             <div className="song-tile" key={i} onClick={handleTileClick}>
-              <img src="https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900" alt="Song_poster" />
-              <div>Everyday</div>
-              <span>Ariana Grande</span>
+              <img src={mockSong.image} alt="Song_poster" />
+              <div>{mockSong.name}</div>
+              <span>{mockSong.artist}</span>
             </div>
           ))}
         </div>
