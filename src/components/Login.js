@@ -2,30 +2,46 @@ import React, { useState } from "react";
 import './Login.css';
 import loginImage from './login-image.png';
 import { useNavigate } from 'react-router-dom';
+import api from '../api'; // Import the new api instance
 
-function Login({ onLogin }) { // Get onLogin prop
+function Login({ onLogin }) { // onLogin now expects a token
   const navigate = useNavigate();
   const [input, setInput] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const setValues = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const storedUser = JSON.parse(localStorage.getItem("userData"));
     if (!input.email || !input.password) {
       alert("All fields are mandatory!");
       return;
     }
 
-    if (storedUser && storedUser.email === input.email && storedUser.password === input.password) {
-      alert("Login successful!");
-      // MODIFIED: Call the onLogin function passed from App.js
-      onLogin(); 
-    } else {
-      alert("Invalid email or password");
+    setIsLoading(true);
+    try {
+      // Call the login API
+      const response = await api.post('/api/auth/login', {
+        email: input.email,
+        password: input.password,
+      });
+
+      if (response.data && response.data.token) {
+        alert("Login successful!");
+        // Pass the token up to App.js
+        onLogin(response.data.token);
+      } else {
+        alert("Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      const message = error.response?.data?.message || "Invalid email or password";
+      alert(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,7 +75,9 @@ function Login({ onLogin }) { // Get onLogin prop
             </span>
           </div>
 
-          <button type="submit" className="login-btn">Login</button>
+          <button type="submit" className="login-btn" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
         </form>
         <label className="dont-exist">
           Don't have an Account?

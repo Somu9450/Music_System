@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Import useEffect
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import TopHeader from './components/TopHeader';
 import SideNavbar from './components/SideNavbar';
@@ -9,28 +9,29 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import CloseIcon from '@mui/icons-material/Close';
 
-// Point 3: Create a default song object
 const defaultSong = {
+  id: "default", // Added an ID
   name: "Everyday",
   artist: "Ariana Grande",
   image: "https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900",
   src: "https://p.scdn.co/mp3-preview/5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b?cid=774b29d4f13844c495f206cafdad9c86"
 };
 
-// This component holds your main app layout
-function MainAppLayout({ isLoggedIn, onLogout, isAudioBarVisible, setIsAudioBarVisible, currentSong, setCurrentSong }) {
+// Main layout component
+function MainAppLayout({ token, onLogout, isAudioBarVisible, setIsAudioBarVisible, currentSong, setCurrentSong }) {
   const [currentPage, setCurrentPage] = React.useState('home');
 
   return (
     <div className="App">
-      <TopHeader isLoggedIn={isLoggedIn} onLogout={onLogout} />
+      <TopHeader isLoggedIn={!!token} onLogout={onLogout} />
       <div className="main-content">
         <SideNavbar setCurrentPage={setCurrentPage} />
         <div className={`page-body ${currentPage === "library" ? "page-body-library" : "page-body-home"}`}>
           <MainPageBody
             currentPage={currentPage}
             setIsAudioBarVisible={setIsAudioBarVisible}
-            setCurrentSong={setCurrentSong} // Point 3: Pass setter down
+            setCurrentSong={setCurrentSong}
+            token={token} // Pass token down
           />
         </div>
       </div>
@@ -38,7 +39,6 @@ function MainAppLayout({ isLoggedIn, onLogout, isAudioBarVisible, setIsAudioBarV
       {isAudioBarVisible && (
         <div className="audio-bar">
           <div className="song-info">
-            {/* Point 3: Use currentSong state */}
             <img
               src={currentSong.image}
               alt="Song Poster"
@@ -49,7 +49,6 @@ function MainAppLayout({ isLoggedIn, onLogout, isAudioBarVisible, setIsAudioBarV
             </div>
           </div>
           <div className="player-wrapper">
-            {/* Point 3: Pass song src to AudioPlayer */}
             <AudioPlayer songSrc={currentSong.src} />
           </div>
           <div className="audio-controls-right">
@@ -64,38 +63,50 @@ function MainAppLayout({ isLoggedIn, onLogout, isAudioBarVisible, setIsAudioBarV
   );
 }
 
-// App.js now becomes the router
+// App component handles routing and auth state
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Use token from localStorage as initial state
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [isAudioBarVisible, setIsAudioBarVisible] = useState(true);
-  // Point 3: Add currentSong state here
   const [currentSong, setCurrentSong] = useState(defaultSong);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    navigate('/'); 
+  // Update localStorage when token changes
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
+    }
+  }, [token]);
+
+  const handleLogin = (newToken) => {
+    setToken(newToken);
+    navigate('/'); // On login, go to the main app
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    navigate('/'); 
+    setToken(null); // This will trigger the useEffect
+    navigate('/'); // On logout, go to homepage
   };
 
   return (
     <Routes>
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
-      <Route path="/signup" element={<SignUp />} />
+      
+      {/* Pass onLogin to SignUp to automatically log in after verification */}
+      <Route path="/signup" element={<SignUp onSignUpSuccess={handleLogin} />} />
+
       <Route 
         path="/*" 
         element={
           <MainAppLayout
-            isLoggedIn={isLoggedIn}
+            token={token}
             onLogout={handleLogout}
             isAudioBarVisible={isAudioBarVisible}
             setIsAudioBarVisible={setIsAudioBarVisible}
-            currentSong={currentSong} // Point 3: Pass state
-            setCurrentSong={setCurrentSong} // Point 3: Pass setter
+            currentSong={currentSong}
+            setCurrentSong={setCurrentSong}
           />
         } 
       />

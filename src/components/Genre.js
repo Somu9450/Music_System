@@ -2,8 +2,7 @@ import React from 'react'
 import SongGrid from './SongGrid'
 import './Genre.css'
 
-// Point 3: Pass setCurrentSong
-export default function Genre({ setIsAudioBarVisible, setCurrentSong }) {
+export default function Genre({ setIsAudioBarVisible, setCurrentSong, token }) {
   return (
     <div className='genre'>
             
@@ -13,6 +12,7 @@ export default function Genre({ setIsAudioBarVisible, setCurrentSong }) {
                   setIsAudioBarVisible={setIsAudioBarVisible} 
                   showSeeAll={false} 
                   setCurrentSong={setCurrentSong}
+                  token={token}
                 />
             </div>
         </div>

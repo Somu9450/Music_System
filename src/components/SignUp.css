@@ -51,43 +51,35 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem 4rem; /* Point 1: Reduced padding */
+  padding: 2rem 4rem; /* Reduced padding */
   box-shadow: 0 0 55px rgba(120, 40, 200, 0.2);
   overflow: hidden;
-  max-width: 500px; /* Point 1: Added max-width */
-  margin: auto; /* Point 1: Center the right panel if it's not flexing fully */
+  max-width: 500px; /* Added max-width */
+  margin: auto; /* Center the right panel */
 }
 
 .signup-title {
   text-align: center;
   font-size: 2rem;
-  margin-bottom: 1.5rem; /* Point 1: Reduced margin */
+  margin-bottom: 1.5rem; /* Reduced margin */
   color: #ff1493; /* pink gradient tone */
 }
 
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem; /* Point 1: Reduced gap */
-  width: 100%; /* Point 1: Changed from 80% to 100% */
-  margin: 0 auto; /* Point 1: Centered form */
+  gap: 0.8rem; /* Reduced gap */
+  width: 100%; /* Changed from 80% to 100% */
+  margin: 0 auto; /* Centered form */
   box-sizing: border-box;
 }
 
-.name-fields {
-  display: flex;
-  gap: 1.5rem; /* Point 1: Reduced gap */
-}
-
-.name-fields div {
-  flex: 1;
-
-}
+/* Point 1: Removed .name-fields and .name-fields div styles */
 
 .signup-form label {
   font-size: 1rem;
   color: #040404;
-  margin-bottom: 0.1rem; /* Point 1: Reduced margin */
+  margin-bottom: 0.1rem; /* Reduced margin */
   display: block;
 }
 
@@ -134,8 +126,8 @@ html, body {
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   justify-self: center;
-  margin-top: 1rem; /* Point 1: Reduced margin */
-  margin-bottom: 1rem; /* Point 1: Reduced margin */
+  margin-top: 1rem; /* Reduced margin */
+  margin-bottom: 1rem; /* Reduced margin */
   width:100%;
 }
 
@@ -152,7 +144,6 @@ html, body {
   display: inline;
 }
 
-/* Point 1: Copied from Login.css */
 .dontexist{
   text-align: center;
   font-size: 1rem;

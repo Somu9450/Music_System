@@ -2,8 +2,7 @@ import React from 'react'
 import SongGrid from './SongGrid'
 import './RecommendedSongs.css'
 
-// Point 3: Pass setCurrentSong
-export default function RecommendedSongs({ setIsAudioBarVisible, setCurrentSong }) {
+export default function RecommendedSongs({ setIsAudioBarVisible, setCurrentSong, token }) {
   return (
     <div className='recommended-songs'>
         
@@ -12,6 +11,7 @@ export default function RecommendedSongs({ setIsAudioBarVisible, setCurrentSong 
               prop="Recommended" 
               setIsAudioBarVisible={setIsAudioBarVisible} 
               setCurrentSong={setCurrentSong}
+              token={token}
             />
         </div>
     </div>

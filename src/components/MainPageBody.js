@@ -6,8 +6,8 @@ import Artists from "./Artists";
 import Genre from "./Genre";
 import LibraryDesign from "./LibraryDesign";
 
-// Point 3: Accept and pass setCurrentSong
-export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCurrentSong }) {
+// Accept and pass token
+export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCurrentSong, token }) {
   
   const pageBodyClass = currentPage === "library" ? "page-body-library" : "page-body-home";
 
@@ -16,27 +16,32 @@ export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCur
       {currentPage === "library" ? (
         <LibraryDesign 
           setIsAudioBarVisible={setIsAudioBarVisible} 
-          setCurrentSong={setCurrentSong} 
+          setCurrentSong={setCurrentSong}
+          token={token} // Pass token
         />
       ) : (
         <>
           <BannerSection />
           <RecentlyPlayed 
             setIsAudioBarVisible={setIsAudioBarVisible} 
-            setCurrentSong={setCurrentSong} 
+            setCurrentSong={setCurrentSong}
+            token={token} // Pass token
           />
           <RecommendedSongs 
             setIsAudioBarVisible={setIsAudioBarVisible} 
-            setCurrentSong={setCurrentSong} 
+            setCurrentSong={setCurrentSong}
+            token={token} // Pass token
           />
           <Artists 
             setIsAudioBarVisible={setIsAudioBarVisible} 
-            setCurrentSong={setCurrentSong} 
+            setCurrentSong={setCurrentSong}
+            token={token} // Pass token
           />
           <div id="genre-section">
             <Genre 
               setIsAudioBarVisible={setIsAudioBarVisible} 
-              setCurrentSong={setCurrentSong} 
+              setCurrentSong={setCurrentSong}
+              token={token} // Pass token
             />
           </div>
         </>
