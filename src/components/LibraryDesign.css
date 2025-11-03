@@ -2,10 +2,8 @@
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  overflow-y: hidden;
   width: 100%;
-  /* REMOVED: height, max-height, and overflow-y.
-    This container will now grow as tall as its content needs to be.
-  */
   box-sizing: border-box;  
 }
 
@@ -62,6 +60,7 @@
   background-color: #212121;
   flex-grow: 1;
   min-height: 0;
+  overflow-y: scroll;
 }
 
 .song-row {

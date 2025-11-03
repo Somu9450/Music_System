@@ -11,7 +11,7 @@ const ProfileMenu = ({ isLoggedIn, onLogout }) => {
   // 3. Create a handler that calls onLogout AND navigates
   const handleLogoutClick = () => {
     onLogout();
-    navigate('/login');
+    navigate('/'); // Point 5: Changed from '/login' to '/'
   };
 
   return (

@@ -4,7 +4,8 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
 
-export default function SongGrid({ prop }) {
+// Point 7: Accept setIsAudioBarVisible
+export default function SongGrid({ prop, setIsAudioBarVisible }) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
@@ -17,6 +18,11 @@ export default function SongGrid({ prop }) {
   };
 
   const handleTileClick = () => {
+    // Point 7: When a song/tile is clicked, show the audio bar
+    if (setIsAudioBarVisible) {
+      setIsAudioBarVisible(true);
+    }
+    // In a real app, this would also set the song context
     navigate(`/library/${prop}`);
   };
 

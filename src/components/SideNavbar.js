@@ -16,8 +16,19 @@ export default function SideNavbar({ setCurrentPage }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Point 4: Updated Podcast click handler
   const handlePodcastClick = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setCurrentPage("home"); // Ensure we are on the home page
+    // Use a slight delay to allow the page to re-render if it was on 'library'
+    setTimeout(() => {
+      const genreElement = document.getElementById("genre-section");
+      if (genreElement) {
+        genreElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        // Fallback just in case
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }
+    }, 0);
   };
 
   return (

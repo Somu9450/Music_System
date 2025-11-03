@@ -3,16 +3,25 @@ import './LibraryDesign.css';
 // import { FiHeart } from "react-icons/fi";
 // import api from '../api/axiosInstance';
 
-// Add a default value to {prop} here
-export default function LibraryDesign({prop = { playlistTitle: "My Playlist", gridTitle: "Liked Songs" }}) {
+// Point 7: Accept setIsAudioBarVisible
+export default function LibraryDesign({ prop = { playlistTitle: "My Playlist", gridTitle: "Liked Songs" }, setIsAudioBarVisible }) {
+  
   const handleLike = async (song) => {""}
-//   try {
-//     await api.post("/songs/liked", song);
-//     console.log("Added to liked songs!");
-//   } catch (err) {
-//     console.error("Error adding to liked:", err);
-//   }
-// };
+  //   try {
+  //     await api.post("/songs/liked", song);
+  //     console.log("Added to liked songs!");
+  //   } catch (err) {
+  //     console.error("Error adding to liked:", err);
+  //   }
+  // };
+
+  // Point 7: Handler to show audio bar on song click
+  const handleSongClick = () => {
+    if (setIsAudioBarVisible) {
+      setIsAudioBarVisible(true);
+    }
+    // ... other play logic would go here
+  };
 
   return (
     
@@ -27,7 +36,7 @@ export default function LibraryDesign({prop = { playlistTitle: "My Playlist", gr
           <div className='playlist-head'>{prop.playlistTitle}</div>
           <div className='playlist-content'>
             {[...Array(8)].map((_, i) => (
-              <div className="song-row" key={i}>
+              <div className="song-row" key={i} onClick={handleSongClick}> {/* Point 7 */}
                 <img src="https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900" alt="Song_poster" />
                 <div>Everyday <span>Ariana Grande</span></div>
                 <div className='like-icon' onClick={handleLike}>
@@ -42,7 +51,7 @@ export default function LibraryDesign({prop = { playlistTitle: "My Playlist", gr
           <div className='grid-menu-head'>{prop.gridTitle}</div>
           <div className='grid-menu-content'>
             {[...Array(10)].map((_, i) => (
-              <div className="menu-tile">
+              <div className="menu-tile" key={i} onClick={handleSongClick}> {/* Point 7 */}
                 <img src="https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900" alt='Song_poster' />
                 <div>Everyday <span>Ariana Grande </span></div>
               </div>

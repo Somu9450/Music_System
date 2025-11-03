@@ -6,18 +6,23 @@ import Artists from "./Artists";
 import Genre from "./Genre";
 import LibraryDesign from "./LibraryDesign";
 
-export default function MainPageBody({ currentPage }) {
+// Point 7: Accept setIsAudioBarVisible
+export default function MainPageBody({ currentPage, setIsAudioBarVisible }) {
   return (
     <div className="main-page-body">
       {currentPage === "library" ? (
-        <LibraryDesign />
+        <LibraryDesign setIsAudioBarVisible={setIsAudioBarVisible} />
       ) : (
         <>
           <BannerSection />
-          <RecentlyPlayed />
-          <RecommendedSongs />
-          <Artists />
-          <Genre />
+          {/* Point 7: Pass prop to children */}
+          <RecentlyPlayed setIsAudioBarVisible={setIsAudioBarVisible} />
+          <RecommendedSongs setIsAudioBarVisible={setIsAudioBarVisible} />
+          <Artists setIsAudioBarVisible={setIsAudioBarVisible} />
+          {/* Point 4: Added id for scrolling */}
+          <div id="genre-section">
+            <Genre setIsAudioBarVisible={setIsAudioBarVisible} />
+          </div>
         </>
       )}
     </div>

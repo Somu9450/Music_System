@@ -2,13 +2,13 @@ import React from 'react'
 import SongGrid from './SongGrid'
 import './Genre.css'
 
-
-export default function Genre() {
+// Point 7: Accept and pass prop
+export default function Genre({ setIsAudioBarVisible }) {
   return (
     <div className='genre'>
             
             <div>
-                <SongGrid prop="Genre"/>
+                <SongGrid prop="Genre" setIsAudioBarVisible={setIsAudioBarVisible} />
             </div>
         </div>
   )

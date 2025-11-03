@@ -1,9 +1,9 @@
 .left-sidebar {
   position: fixed;
-  top: 0;
+  top: 0px;
   left: 0;
   width: 5%;
-  height: 88vh;
+  height: 88.5vh; /* Point 3: Fill remaining height */
   background: linear-gradient(to bottom, #212048, #1f2141, #24224f);
   color: white;
   display: flex;

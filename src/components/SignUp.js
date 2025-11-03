@@ -47,11 +47,21 @@ function SignUp() {
           </div>
           <label>Email</label>
           <input type="email" name="email" onChange={setValues} value={input.email} required />
+          
+          {/* Point 2: Wrapped Password field */}
           <label>Password</label>
-          <input type={showPassword ? "text" : "password"} name="password" onChange={setValues} value={input.password} required />
+          <div className="confirm-password-box"> {/* Re-using this class */}
+            <input type={showPassword ? "text" : "password"} name="password" onChange={setValues} value={input.password} required />
+            <span className="switch-password" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "🙈" : "👁️"}</span>
+          </div>
+
+          {/* Point 2: Wrapped Confirm Password field */}
           <label>Confirm Password</label>
-          <input type={showPassword ? "text" : "password"} name="confirmPassword" onChange={setValues} value={input.confirmPassword} required />
-          <span className="switch-password" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "🙈" : "👁️"}</span>
+          <div className="confirm-password-box">
+            <input type={showPassword ? "text" : "password"} name="confirmPassword" onChange={setValues} value={input.confirmPassword} required />
+            <span className="switch-password" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "🙈" : "👁️"}</span>
+          </div>
+
           <button type="submit" className="signup-btn">Sign Up</button>
         </form>
       </div>
