@@ -7,7 +7,6 @@ import api from '../api'; // Import the new api instance
 function SignUp({ onSignUpSuccess }) {
   const navigate = useNavigate();
   
-  // Point 1: Updated state to match backend (username instead of names)
   const [input, setInput] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   
   const [otp, setOtp] = useState("");
@@ -31,14 +30,12 @@ function SignUp({ onSignUpSuccess }) {
         return;
       }
       try {
-        // Point 1: Updated API call to send username
         await api.post('/api/auth/signup', {
           username: input.username,
           email: input.email,
           password: input.password,
         });
         
-        // Point 2 (from previous request): Show email in alert
         alert(`OTP sent to ${input.email}! Please check your inbox.`);
         setShowOtpInput(true);
         
@@ -51,7 +48,8 @@ function SignUp({ onSignUpSuccess }) {
       try {
         const response = await api.post('/api/auth/verify-otp', {
           email: input.email,
-          otp: otp.toString()
+          // This is the one change, as requested by your backend team
+          otp: otp.toString(), 
         });
 
         if (response.data && response.data.token) {
@@ -62,7 +60,13 @@ function SignUp({ onSignUpSuccess }) {
         }
       } catch (error) {
         console.error("OTP verification error:", error);
-        alert(error.response?.data?.message || "Invalid or expired OTP.");
+        
+        // This is the error you are seeing
+        if (error.message === "Network Error") {
+            alert("Network Error: Could not connect to the server. This is likely a CORS error on the backend. Please ask the backend team to redeploy.");
+        } else {
+            alert(error.response?.data?.message || "Invalid or expired OTP.");
+        }
       }
     }
     setIsLoading(false);
@@ -89,7 +93,6 @@ function SignUp({ onSignUpSuccess }) {
         <form className="signup-form" onSubmit={handleFormSubmit}>
           {!showOtpInput ? (
             <>
-              {/* Point 1: Replaced name-fields with username */}
               <label>Username</label>
               <input type="text" name="username" onChange={setValues} value={input.username} required />
 
@@ -110,7 +113,7 @@ function SignUp({ onSignUpSuccess }) {
             </>
           ) : (
             <>
-              <label>Email</label>
+              <label>Email (read-only)</label>
               <input type="email" name="email" value={input.email} readOnly disabled />
 
               <label>OTP</label>
