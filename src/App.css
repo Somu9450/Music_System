@@ -10,23 +10,33 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  margin-left: 5%; /* Point 3: Account for the 5% fixed sidebar */
-  margin-top: 70px;  /* Point 3: Account for fixed header (adjust px as needed) */
+  margin-left: 5%; /* Account for the 5% fixed sidebar */
+  margin-top: 70px;  /* Account for fixed header (adjust px as needed) */
 }
 
 .page-body {
   flex: 1;
   padding: 20px;
   overflow-y: auto; /* This handles the scrolling for the main page */
-  overflow-x: hidden; /* Point 3: Prevent horizontal overflow */
-  background-image: url("./components/assets/background-image.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: scroll;
-
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  box-sizing: border-box; /* Ensure padding is included */
 }
 
-/* Point 7: Check if audio-bar exists before styling */
+/* Point 3: Add class for homepage background */
+.page-body-home {
+  /* Using the relative path from the CSS file to the asset */
+  background-image: url('./components/assets/background-image.png');
+  background-size: 100% auto; /* Cover width, scroll vertically */
+  background-repeat: repeat-y;
+  background-attachment: scroll; /* Image scrolls with content */
+}
+
+/* Point 2: Add class to stop scrolling on library page */
+.page-body-library {
+  overflow-y: hidden;
+}
+
+
 .audio-bar {
   display: flex;
   justify-content: space-between;
@@ -36,12 +46,14 @@
   border-top: 1px solid #282828;
   position: sticky;
   bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .song-info {
   display: flex;
   align-items: center;
-  flex: 1; /* Takes 1 part of the space */
+  flex: 2; /* Takes 2 parts of the space */
   min-width: 0; /* Prevents long text from pushing the layout */
 }
 
@@ -64,15 +76,14 @@
 }
 
 .player-wrapper {
-  /* MODIFIED: Changed from flex: 1 to flex: 2 to make it wider */
-  flex: 5; /* Takes 2 parts of the space */
+  /* Point 1: Made player wider */
+  flex: 10; /* Takes 10 parts of the space */
   display: flex;
   justify-content: center;
 }
 
 .player-wrapper .audio-player-container {
   width: 100%;
-  /* MODIFIED: Increased max-width for the player */
   max-width: 900px; 
 }
 
@@ -81,13 +92,12 @@
 }
 
 .audio-controls-right {
-  flex: 3; /* Takes 1 part of the space */
-  display: flex;         /* Point 7: Added flex properties */
+  flex: 2; /* Point 1: Matched .song-info's flex */
+  display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 
-/* Point 7: Styles for the close button */
 .audio-close-btn {
   cursor: pointer;
   margin-right: 15px;

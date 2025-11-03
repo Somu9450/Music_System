@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
   const navigate = useNavigate();
-  const [input, setInput] = useState({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "" });
+  const [input, setInput] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
 
   const setValues = (e) => {
-    setInput({ ...input, [e.target.name]: e.target.value });
+    setInput({ ...input, [e.target.username]: e.target.value });
   };
 
   const handleSignUp = (e) => {
@@ -38,11 +38,7 @@ function SignUp() {
           <div className="name-fields">
             <div>
               <label>First Name</label>
-              <input type="text" name="firstName" onChange={setValues} value={input.firstName} required />
-            </div>
-            <div>
-              <label>Last Name</label>
-              <input type="text" name="lastName" onChange={setValues} value={input.lastName} required />
+              <input type="text" name="username" onChange={setValues} value={input.username} required />
             </div>
           </div>
           <label>Email</label>

@@ -4,8 +4,8 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
 
-// Point 7: Accept setIsAudioBarVisible
-export default function SongGrid({ prop, setIsAudioBarVisible }) {
+// Point 2: Added showSeeAll prop
+export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true }) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
@@ -18,19 +18,26 @@ export default function SongGrid({ prop, setIsAudioBarVisible }) {
   };
 
   const handleTileClick = () => {
-    // Point 7: When a song/tile is clicked, show the audio bar
     if (setIsAudioBarVisible) {
       setIsAudioBarVisible(true);
     }
-    // In a real app, this would also set the song context
-    navigate(`/library/${prop}`);
+    // Don't navigate if it's just a song click
+    // navigate(`/library/${prop}`);
+  };
+
+  // Point 2: Separate handler for "See All"
+  const handleSeeAllClick = () => {
+     navigate(`/library/${prop}`);
   };
 
   return (
     <>
       <div className="grid-header">
         <div className='grid-name'><span>{prop}</span></div>
-        <div className="see-all" onClick={handleTileClick}>See All</div>
+        {/* Point 2: Conditionally render "See All" */}
+        {showSeeAll && (
+          <div className="see-all" onClick={handleSeeAllClick}>See All</div>
+        )}
       </div>
 
       <div className="grid-flex">

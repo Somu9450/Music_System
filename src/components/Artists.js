@@ -2,13 +2,13 @@ import React from 'react'
 import SongGrid from './SongGrid'
 import './Artists.css'
 
-// Point 7: Accept and pass prop
 export default function Artists({ setIsAudioBarVisible }) {
   return (
     <div className='artists'>
         
         <div>
-            <SongGrid prop="Artists" setIsAudioBarVisible={setIsAudioBarVisible} />
+            {/* Point 2: Added showSeeAll={false} */}
+            <SongGrid prop="Artists" setIsAudioBarVisible={setIsAudioBarVisible} showSeeAll={false} />
         </div>
     </div>
   )

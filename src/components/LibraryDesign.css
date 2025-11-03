@@ -2,9 +2,11 @@
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  overflow-y: hidden;
   width: 100%;
-  box-sizing: border-box;  
+  /* Point 2: Set height to fill the viewport inside .page-body */
+  height: 100%; 
+  box-sizing: border-box;
+  
 }
 
 .page-head {
@@ -12,6 +14,7 @@
   font-size: 15px;
   font-weight: 700;
   margin:1% 0%;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 .page-head h1{
   margin: 0px;
@@ -26,6 +29,8 @@
   flex-grow: 1;
   align-items: center;
   justify-content: center;
+  /* Point 2: Allow grid to take remaining height */
+  height: calc(100% - 60px); /* Adjust 60px as needed for .page-head */
 }
 
 .playlist {
@@ -36,7 +41,8 @@
   max-width: 50%;
   box-sizing: border-box;
   padding: 6px;
-  /* REMOVED: height and overflow-y */
+  /* Point 2: Set height for the column */
+  height: 100%; 
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
@@ -49,18 +55,19 @@
   border-bottom: 1px solid #333;
   background-color: #000000;
   box-sizing: border-box;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .playlist-content {
   display: flex;
   flex-direction: column;
-  /* REMOVED: overflow-y */
+  /* Point 2: Enable scrolling */
+  overflow-y: auto; 
   scrollbar-width: none;
   width: 100%;
   background-color: #212121;
   flex-grow: 1;
   min-height: 0;
-  overflow-y: scroll;
 }
 
 .song-row {
@@ -103,8 +110,21 @@
   margin-right: 20px;
 }
 
+/* Point 2: Style for the heart icon */
 .heart-icon{
   font-size: 20px;
+  color: #aaa;
+  cursor: pointer;
+  margin-left: auto; /* Push to the right */
+  padding: 0 10px;
+}
+
+.heart-icon:hover{
+  color: white;
+}
+/* Style for a 'liked' heart */
+.heart-icon.liked {
+  color: #1ed760;
 }
 
 
@@ -116,7 +136,8 @@
   max-width: 100%;
   box-sizing: border-box;
   padding: 6px;
-  /* REMOVED: height and overflow-y */
+  /* Point 2: Set height for the column */
+  height: 100%;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
@@ -129,17 +150,21 @@
   border-bottom: 1px solid #333;
   background-color: #000000;
   box-sizing: border-box;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .grid-menu-content {
   display: flex;
   flex-direction: row;
   flex-wrap:wrap;
-  /* REMOVED: overflow-y */
+  /* Point 2: Enable scrolling */
+  overflow-y: auto;
   scrollbar-width: none;
   gap: 10px;
   padding: 10px 5px;
   justify-content: center;
+  flex-grow: 1;
+  min-height: 0;
 }
 
 .menu-tile {
@@ -153,6 +178,7 @@
   border-radius: 6px;
   color: white;
   text-align: center;
+  height: 200px; /* Added fixed height for alignment */
 }
 
 .menu-tile:hover{
