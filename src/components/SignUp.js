@@ -51,7 +51,7 @@ function SignUp({ onSignUpSuccess }) {
       try {
         const response = await api.post('/api/auth/verify-otp', {
           email: input.email,
-          otp: otp,
+          otp: otp.toString()
         });
 
         if (response.data && response.data.token) {
@@ -110,7 +110,7 @@ function SignUp({ onSignUpSuccess }) {
             </>
           ) : (
             <>
-              <label>Email (read-only)</label>
+              <label>Email</label>
               <input type="email" name="email" value={input.email} readOnly disabled />
 
               <label>OTP</label>
