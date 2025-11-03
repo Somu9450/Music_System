@@ -1,0 +1,75 @@
+.top-header {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  background-color: #0f151f;
+  color: white;
+  padding: 1.5% 2.5%;
+  position: fixed;
+  top: 0;
+  left: 5%;
+  width: 90%;
+  height: 4%;
+  z-index: 1000;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.header-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  border-radius: 20px 0px 0px 20px;
+  border: none;
+  gap:2px;
+
+}
+
+.search-input {
+  width: 60%;
+  padding: 3px 14px;
+  border-radius: 20px 0px 0px 20px;
+  border: none;
+  box-shadow: none;
+  background-color: #2a2a3d;
+  color: white;
+  font-size: 15px;
+}
+
+.search-lens{
+  width: 8%;
+  background-color: #3d3b78;
+  border-radius: 0px 20px 20px 0px;
+  padding: 1%;
+}
+
+.header-right {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+}
+
+.header-btn {
+  background-color: #3f3f5a;
+  width: 110px;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background: linear-gradient(155deg, #27264d, #3d3891, #27264d);
+}
+
+.header-btn:hover {
+  background-color: #6c63ff;
+}

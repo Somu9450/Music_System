@@ -1,0 +1,195 @@
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  width: 100%;
+  height: 100%;
+  max-height: 75vh;
+  box-sizing: border-box;  
+}
+
+.page-head {
+  color: #6fb0e4;
+  font-size: 15px;
+  font-weight: 700;
+  margin:1% 0%;
+}
+.page-head h1{
+  margin: 0px;
+}
+
+.playlist-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 3%;
+  width: 100%;
+  overflow: hidden;
+  /* background-color: #a259ff; */
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.playlist {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5%;
+  max-width: 50%;
+  box-sizing: border-box;
+  padding: 6px;
+  height: 60vh;
+  overflow-y: scroll; 
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.playlist-head {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 10px 10px;
+  border-bottom: 1px solid #333;
+  background-color: #000000;
+  box-sizing: border-box;
+}
+
+.playlist-content {
+  /* MODIFIED: Changed from inline-flex to flex */
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll; /* This is the only vertical scroll */
+  scrollbar-width: none;
+  width: 100%;
+  background-color: #212121;
+  /* MODIFIED: Added flex-grow to fill the .playlist container */
+  flex-grow: 1;
+  /* MODIFIED: Prevents flex items from overflowing */
+  min-height: 0;
+}
+
+.song-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-bottom: 1px solid #222;
+  color: white;
+}
+
+.song-row:hover{
+  /* transform: scale(1.05) translateY(3px); */
+  transition: transform 0.3s ease;
+  background-color: #31314e;
+}
+
+.song-row img {
+  width: 10%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.song-row div:nth-child(2) {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.song-row span {
+  display: block;
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+.like-icon {
+  font-size: 0.9rem;
+  color: #1ed760;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.heart-icon{
+  font-size: 20px;
+}
+
+
+.grid-menus{
+  flex: 2.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  height: 60vh;
+  overflow-y: scroll; 
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.grid-menu-head {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 10px 10px;
+  border-bottom: 1px solid #333;
+  background-color: #000000;
+  box-sizing: border-box;
+}
+
+.grid-menu-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  /* width: 97%; */
+  gap: 10px;
+  /* background-color: #212121; */
+  padding: 10px 5px;
+  justify-content: center;
+}
+
+.menu-tile {
+  flex: 0 0 140px;
+  display: flex;
+  flex-direction: column; /* stack image and text vertically */
+  align-items: center;
+  justify-content: flex-start; /* keep text below image */
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  text-align: center;
+}
+
+.menu-tile:hover{
+  background: linear-gradient(155deg, #24224f, #2f2b79, #27264d, #2f2b79);
+}
+
+.menu-tile:active{
+  transform: scale(1.05) translateY(3px);
+  transition: transform 0.1s ease;
+}
+.menu-tile img {
+  width: 100%;
+  height: 130px; /* keep consistent image height */
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.menu-tile div {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+.menu-tile span {
+  display: block;
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 2px;
+}
