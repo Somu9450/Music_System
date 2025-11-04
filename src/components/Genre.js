@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useRef } from 'react'; // Make sure to import useRef
 import './Genre.css';
-import mlApi from '../apiMl'; // Import ML API
+import mlApi from '../apiMl'; 
 import { useEffect, useState } from 'react';
+// Import icons for arrows
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-// Point 3 & 6: Create a new GenreGrid component
-function GenreGrid({ setLibraryView, setCurrentPage }) {
+export default function Genre({ setLibraryView, setCurrentPage }) {
   const [genres, setGenres] = useState([]);
+  const scrollRef = useRef(null); // Add ref for scrolling
 
   useEffect(() => {
-    // Fetch all genres from the ML API
     const fetchGenres = async () => {
       try {
         const response = await mlApi.get('/genres');
-        // Get a subset of genres to display
-        setGenres(response.data.slice(0, 12)); 
+        setGenres(response.data); // Get all genres
       } catch (err) {
         console.error("Failed to fetch genres", err);
       }
@@ -22,44 +23,55 @@ function GenreGrid({ setLibraryView, setCurrentPage }) {
   }, []);
 
   const handleGenreClick = (genreName) => {
-    // Point 6: Set the library view and switch page
     setLibraryView({ type: 'genre', value: genreName });
     setCurrentPage('library');
   };
 
+  // Add scroll functions
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <>
+    <div className='genre' id="genre-section">
       <div className="grid-header">
         <div className='grid-name'><span>Genre</span></div>
       </div>
-      <div className="genre-grid-container">
-        {genres.length > 0 ? (
-          genres.map((genreName) => (
-            <div 
-              className="genre-tile" 
-              key={genreName}
-              onClick={() => handleGenreClick(genreName)}
-            >
-              {genreName}
-            </div>
-          ))
-        ) : (
-          <p style={{ color: '#aaa', marginLeft: '20px' }}>Loading genres...</p>
-        )}
+      
+      {/* This is the new structure with arrows */}
+      <div className="grid-flex">
+        <div className="arrow-icon" onClick={scrollLeft}>
+          <ArrowBackIosIcon fontSize="large" color='primary' />
+        </div>
+
+        <div className="genre-grid-container" ref={scrollRef}>
+          {genres.length > 0 ? (
+            genres.map((genreName) => (
+              <div 
+                className="genre-tile" 
+                key={genreName}
+                onClick={() => handleGenreClick(genreName)}
+              >
+                {genreName}
+              </div>
+            ))
+          ) : (
+            <p style={{ color: '#aaa', marginLeft: '20px' }}>Loading genres...</p>
+          )}
+        </div>
+
+        <div className="arrow-icon" onClick={scrollRight}>
+          <ArrowForwardIosIcon fontSize="large" color='primary' />
+        </div>
       </div>
-    </>
-  );
-}
-
-
-export default function Genre({ setLibraryView, setCurrentPage }) {
-  return (
-    <div className='genre' id="genre-section">
-      {/* Point 3: Use the new GenreGrid */}
-      <GenreGrid 
-        setLibraryView={setLibraryView} 
-        setCurrentPage={setCurrentPage} 
-      />
     </div>
   );
 }

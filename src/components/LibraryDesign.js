@@ -13,7 +13,9 @@ export default function LibraryDesign({
   setCurrentSong, 
   setIsAudioBarVisible, 
   libraryView, 
-  setLibraryView 
+  setLibraryView,
+  likedSongsMap, // Point 1: Receive from props
+  handleLikeToggle // Point 1: Receive from props
 }) {
   
   const [playlistTitle, setPlaylistTitle] = useState("Liked Songs");
@@ -21,41 +23,17 @@ export default function LibraryDesign({
   const [gridTitle, setGridTitle] = useState("Recommended");
   const [gridContent, setGridContent] = useState([]);
 
-  const [likedSongsMap, setLikedSongsMap] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
-  // Helper to fetch liked songs status
-  const fetchLikedStatus = async () => {
-    if (!token) {
-      setLikedSongsMap({});
-      return {};
-    }
-    try {
-      const response = await api.get('/api/liked/');
-      const songsFromDb = response.data.songs || [];
-      const likeMap = songsFromDb.reduce((acc, song) => {
-        acc[song.track_id || song._id] = true;
-        return acc;
-      }, {});
-      setLikedSongsMap(likeMap);
-      return likeMap;
-    } catch (err) {
-      console.error("Failed to fetch liked songs status", err);
-      return {};
-    }
-  };
 
   // Main data fetching logic based on libraryView
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await fetchLikedStatus(); // Always refresh like status
 
       if (libraryView.type === 'liked') {
         setPlaylistTitle("Liked Songs");
         setGridTitle("Recommended For You");
         
-        // Fetch liked songs from Auth API
         if (!token) {
           setPlaylistContent([]);
           setGridContent([]);
@@ -66,14 +44,13 @@ export default function LibraryDesign({
           const response = await api.get('/api/liked/');
           const likedSongs = (response.data.songs || []).map(song => ({
             ...normalizeSongData(song),
-            id: song.track_id || song._id, // Ensure frontend ID is track_id
+            id: song.track_id || song._id, 
           }));
           setPlaylistContent(likedSongs);
 
           // Fetch recommendations based on first liked song
           if (likedSongs.length > 0) {
             const recResponse = await mlApi.get(`/recommend/${likedSongs[0].id}?limit=10`);
-            // recommendations are in { similar_songs: [], popular_in_genre: [] }
             const recs = recResponse.data.similar_songs.map(normalizeSongData);
             setGridContent(recs.map(song => ({ type: 'song', data: song })));
           } else {
@@ -87,12 +64,11 @@ export default function LibraryDesign({
         setPlaylistTitle(libraryView.value);
         setGridTitle("Other Genres");
 
-        // Fetch songs for this genre
         try {
-          const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}`);
+          // Point 3 & 5: Fetch ALL songs for this genre
+          const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=50`);
           setPlaylistContent(songsResponse.data.map(normalizeSongData));
 
-          // Fetch all genres for grid
           const genresResponse = await mlApi.get('/genres');
           const otherGenres = genresResponse.data.filter(g => g.toLowerCase() !== libraryView.value.toLowerCase());
           setGridContent(otherGenres.map(g => ({ type: 'genre', name: g })));
@@ -104,23 +80,40 @@ export default function LibraryDesign({
         setPlaylistTitle(libraryView.value);
         setGridTitle("Other Artists");
 
-        // Fetch songs for this artist
         try {
-          const songsResponse = await mlApi.get(`/search?query=${libraryView.value}`);
+          // Point 3 & 4: Fetch ALL songs for this artist by search
+          const songsResponse = await mlApi.get(`/search?query=${libraryView.value}&limit=50`);
           setPlaylistContent(songsResponse.data.map(normalizeSongData));
 
-          // Fetch artist images for grid
           const otherArtists = allArtists.filter(a => a.toLowerCase() !== libraryView.value.toLowerCase());
           const artistPromises = otherArtists.map(name => mlApi.get(`/search?query=${name}&limit=1`));
           const results = await Promise.all(artistPromises);
           const artistData = results.map((res, index) => ({
             type: 'artist',
             name: otherArtists[index],
-            image: res.data[0]?.img || "default-image-url.png" // Fallback image
+            image: res.data[0]?.img || "default-image-url.png" 
           }));
           setGridContent(artistData);
         } catch (err) {
           console.error("Failed to fetch artist data", err);
+        }
+      
+      // New 'recommended' view
+      } else if (libraryView.type === 'recommended') {
+        setPlaylistTitle("Recommended Songs");
+        setGridTitle("All Artists"); // As requested
+
+        try {
+          // Fetch all popular songs
+          const songsResponse = await mlApi.get('/popular?limit=50');
+          setPlaylistContent(songsResponse.data.map(normalizeSongData));
+
+          // Fetch artist names for grid
+          // Using hardcoded list as API doesn't have a /artists endpoint
+          setGridContent(allArtists.map(a => ({ type: 'artist_name_only', name: a })));
+          
+        } catch (err) {
+          console.error("Failed to fetch recommended/artist data", err);
         }
       }
       setIsLoading(false);
@@ -129,54 +122,8 @@ export default function LibraryDesign({
     fetchData();
   }, [libraryView, token]); // Rerun when view or token changes
 
-  // Like/Unlike handler
-  const handleLike = async (e, song) => {
-    e.stopPropagation();
-    if (!token) {
-      alert("Please log in to like songs");
-      return;
-    }
-    const trackId = song.id; 
-    const isLiked = !!likedSongsMap[trackId];
-
-    try {
-      if (isLiked) {
-        // Find the full mongoId from the auth backend to delete
-        // This is a limitation: we MUST fetch liked songs first to get the _id
-        const likedResponse = await api.get('/api/liked/');
-        const songToUnlike = likedResponse.data.songs.find(s => (s.track_id || s._id) === trackId);
-        if (songToUnlike) {
-          await api.delete(`/api/liked/${songToUnlike._id}`);
-        }
-      } else {
-        await api.post('/api/liked/add', { 
-          songId: trackId, // Send track_id
-          ...song // Send all song data
-        });
-      }
-      
-      // Optimistically update UI
-      setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
-
-      // If we are on the 'liked' page, refresh the list
-      if (libraryView.type === 'liked') {
-        const response = await api.get('/api/liked/');
-        const likedSongs = (response.data.songs || []).map(song => ({
-          ...normalizeSongData(song),
-          id: song.track_id || song._id,
-        }));
-        setPlaylistContent(likedSongs);
-      }
-
-    } catch (err) {
-      console.error("Like error:", err);
-      alert("Failed to update liked songs.");
-    }
-  };
-
   // Song click handler
   const handleSongClick = (song) => {
-    // Point 1: Check for login
     if (!token) {
       alert("Please login to play music.");
       return;
@@ -197,7 +144,7 @@ export default function LibraryDesign({
       handleSongClick(item.data);
     } else if (item.type === 'genre') {
       setLibraryView({ type: 'genre', value: item.name });
-    } else if (item.type === 'artist') {
+    } else if (item.type === 'artist' || item.type === 'artist_name_only') {
       setLibraryView({ type: 'artist', value: item.name });
     }
   };
@@ -225,6 +172,13 @@ export default function LibraryDesign({
             <span>{item.name}</span>
           </div>
         );
+      // New grid item for "artist name only"
+      case 'artist_name_only':
+        return (
+          <div className="genre-tile-library" key={item.name} onClick={() => handleGridClick(item)}>
+            {item.name}
+          </div>
+        );
       default:
         return null;
     }
@@ -248,9 +202,10 @@ export default function LibraryDesign({
                   <img src={song.image} alt="Song_poster" />
                   <div>{song.name} <span>{song.artist}</span></div>
                   
+                  {/* Point 1: Use global like state and handler */}
                   <div 
                     className={`heart-icon ${likedSongsMap[song.id] ? 'liked' : ''}`} 
-                    onClick={(e) => handleLike(e, song)}
+                    onClick={(e) => handleLikeToggle(song, e)}
                   >
                     {likedSongsMap[song.id] ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                   </div>

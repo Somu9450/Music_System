@@ -10,8 +10,9 @@ export default function SongGrid({
   setIsAudioBarVisible, 
   showSeeAll = true, 
   setCurrentSong, 
-  token, // Point 1: Added token
-  songs = [] 
+  token, 
+  songs = [],
+  onSeeAllClick // New prop
 }) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -44,8 +45,7 @@ export default function SongGrid({
     }
   };
 
-  const handleTileClick = (songData) => {
-    // Point 1: Check for login
+  const handleTileClick = (song) => {
     if (!token) {
       alert("Please login to play music.");
       return;
@@ -54,11 +54,12 @@ export default function SongGrid({
     if (setIsAudioBarVisible) {
       setIsAudioBarVisible(true);
     }
-    setCurrentSong(songData);
-    handleRecentApiCall(songData);
+    setCurrentSong(song);
+    handleRecentApiCall(song);
   };
 
-  const handleSeeAllClick = () => {
+  // Use the custom handler if provided, otherwise default
+  const handleSeeAll = onSeeAllClick ? onSeeAllClick : () => {
      navigate(`/library/${prop}`);
   };
 
@@ -67,7 +68,7 @@ export default function SongGrid({
       <div className="grid-header">
         <div className='grid-name'><span>{prop}</span></div>
         {showSeeAll && (
-          <div className="see-all" onClick={handleSeeAllClick}>See All</div>
+          <div className="see-all" onClick={handleSeeAll}>See All</div>
         )}
       </div>
 

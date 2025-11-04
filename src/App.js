@@ -8,6 +8,9 @@ import MainPageBody from './components/MainPageBody';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import CloseIcon from '@mui/icons-material/Close';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'; // Point 1
+import FavoriteIcon from '@mui/icons-material/Favorite'; // Point 1
+import api from './api'; // Point 1: Auth API
 
 const defaultSong = {
   id: "5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b", 
@@ -25,8 +28,10 @@ function MainAppLayout({
   setIsAudioBarVisible, 
   currentSong, 
   setCurrentSong,
-  libraryView, // Point 6
-  setLibraryView // Point 6
+  libraryView, 
+  setLibraryView,
+  likedSongsMap, // Point 1
+  handleLikeToggle // Point 1
 }) {
   const [currentPage, setCurrentPage] = React.useState('home');
 
@@ -37,22 +42,24 @@ function MainAppLayout({
         onLogout={onLogout} 
         setCurrentSong={setCurrentSong}
         setIsAudioBarVisible={setIsAudioBarVisible}
-        token={token} // Point 1: Pass token for login check
+        token={token} 
       />
       <div className="main-content">
         <SideNavbar 
           setCurrentPage={setCurrentPage} 
-          setLibraryView={setLibraryView} // Point 6
+          setLibraryView={setLibraryView} 
         />
         <div className={`page-body ${currentPage === "library" ? "page-body-library" : "page-body-home"}`}>
           <MainPageBody
             currentPage={currentPage}
             setIsAudioBarVisible={setIsAudioBarVisible}
             setCurrentSong={setCurrentSong}
-            token={token} // Point 1: Pass token
-            libraryView={libraryView} // Point 6
-            setLibraryView={setLibraryView} // Point 6
-            setCurrentPage={setCurrentPage} // Point 6
+            token={token} 
+            libraryView={libraryView} 
+            setLibraryView={setLibraryView} 
+            setCurrentPage={setCurrentPage}
+            likedSongsMap={likedSongsMap} // Point 1: Pass down
+            handleLikeToggle={handleLikeToggle} // Point 1: Pass down
           />
         </div>
       </div>
@@ -67,6 +74,13 @@ function MainAppLayout({
             <div className="song-details">
               {currentSong.name} <br />
               <span>{currentSong.artist}</span>
+            </div>
+            {/* Point 1: Like icon in audio player */}
+            <div 
+              className={`heart-icon-player ${likedSongsMap[currentSong.id] ? 'liked' : ''}`}
+              onClick={() => handleLikeToggle(currentSong)}
+            >
+              {likedSongsMap[currentSong.id] ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </div>
           </div>
           <div className="player-wrapper">
@@ -89,9 +103,83 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [isAudioBarVisible, setIsAudioBarVisible] = useState(true);
   const [currentSong, setCurrentSong] = useState(defaultSong);
-  // Point 6: Add state to control the Library page
   const [libraryView, setLibraryView] = useState({ type: 'liked' });
+  const [likedSongsMap, setLikedSongsMap] = useState({}); // Point 1: Global like state
   const navigate = useNavigate();
+
+  // Point 1: Fetch liked songs when user logs in
+  useEffect(() => {
+    const fetchLiked = async () => {
+      if (token) {
+        try {
+          const response = await api.get('/api/liked/');
+          const songsFromDb = response.data.songs || [];
+          const likeMap = songsFromDb.reduce((acc, song) => {
+            acc[song.track_id || song._id] = true; // Use track_id as key
+            return acc;
+          }, {});
+          setLikedSongsMap(likeMap);
+        } catch (err) {
+          console.error("Failed to fetch liked songs status", err);
+        }
+      } else {
+        setLikedSongsMap({}); // Clear likes on logout
+      }
+    };
+    fetchLiked();
+  }, [token]);
+
+  // Point 1: Global function to handle liking/unliking a song
+  const handleLikeToggle = async (song, e) => {
+    if (e) e.stopPropagation(); // Prevent row click if called from library
+    
+    if (!token) {
+      alert("Please log in to like songs");
+      return;
+    }
+    if (!song || !song.id) {
+      console.error("Cannot like a song with no ID", song);
+      return;
+    }
+
+    const trackId = song.id; 
+    const isLiked = !!likedSongsMap[trackId];
+
+    try {
+      if (isLiked) {
+        // --- UNLIKE ---
+        // We need the backend's internal _id to delete
+        const likedResponse = await api.get('/api/liked/');
+        const songToUnlike = likedResponse.data.songs.find(s => (s.track_id || s._id) === trackId);
+        if (songToUnlike) {
+          await api.delete(`/api/liked/${songToUnlike._id}`);
+        }
+      } else {
+        // --- LIKE ---
+        await api.post('/api/liked/add', { 
+          songId: trackId, // Send track_id as songId
+          // Send all song data so backend can create it
+          name: song.name,
+          artist: song.artist,
+          image: song.image,
+          src: song.src,
+          track_id: trackId 
+        });
+      }
+      
+      // Update local state
+      setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
+
+      // If we are on the 'liked' page, force a reload
+      if (libraryView.type === 'liked') {
+        setLibraryView({ type: 'liked', refresh: Date.now() }); // Force refresh
+      }
+
+    } catch (err) {
+      console.error("Like error:", err);
+      alert("Failed to update liked songs.");
+    }
+  };
 
   useEffect(() => {
     if (token) {
@@ -125,8 +213,10 @@ function App() {
             setIsAudioBarVisible={setIsAudioBarVisible}
             currentSong={currentSong}
             setCurrentSong={setCurrentSong}
-            libraryView={libraryView} // Point 6
-            setLibraryView={setLibraryView} // Point 6
+            libraryView={libraryView} 
+            setLibraryView={setLibraryView} 
+            likedSongsMap={likedSongsMap} // Point 1
+            handleLikeToggle={handleLikeToggle} // Point 1
           />
         } 
       />

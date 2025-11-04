@@ -10,17 +10,24 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  margin-left: 5%; /* Account for the 5% fixed sidebar */
-  margin-top: 70px;  /* Account for fixed header */
+  margin-left: 5%; 
+  margin-top: 70px;  
 }
 
 .page-body {
   flex: 1;
   padding: 20px;
-  overflow-y: auto; /* This handles the scrolling for the main page */
-  overflow-x: hidden; /* Prevent horizontal overflow */
-  box-sizing: border-box; /* Ensure padding is included */
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  box-sizing: border-box; 
 }
+
+/* This is the new rule */
+.main-page-body {
+  height: 100%;
+  width: 100%;
+}
+
 
 .page-body-home {
   background-image: url('./components/assets/background-image.png');
@@ -44,7 +51,7 @@
   bottom: 0;
   width: 100%;
   box-sizing: border-box;
-  z-index: 1000; /* Ensure it's above page content */
+  z-index: 1000; 
 }
 
 .song-info {
@@ -71,6 +78,21 @@
   font-size: 0.9rem;
   color: #b3b3b3;
 }
+
+/* Point 1: Style for the like icon in the player */
+.heart-icon-player {
+  color: #aaa;
+  cursor: pointer;
+  margin-left: 15px; /* Space from song details */
+  font-size: 20px;
+}
+.heart-icon-player:hover {
+  color: white;
+}
+.heart-icon-player.liked {
+  color: #1ed760; /* Liked color */
+}
+
 
 .player-wrapper {
   flex: 10; 
@@ -107,42 +129,44 @@
 /* --- RESPONSIVE STYLES --- */
 @media (max-width: 768px) {
   .main-content {
-    margin-left: 0; /* Remove sidebar margin */
-    /* Adjust margin-top for new header height */
+    margin-left: 0; 
     margin-top: 140px; 
-    /* Add padding for new bottom nav and audio bar */
     padding-bottom: 120px; 
+  }
+  
+  .main-page-body {
+    height: auto;
   }
 
   .page-body {
-    padding: 10px; /* Reduce padding on mobile */
+    padding: 10px; 
   }
   
   .page-body-library {
-    overflow-y: auto; /* Allow library to scroll on mobile */
+    overflow-y: auto; 
   }
 
   .audio-bar {
-    position: fixed; /* Fix audio bar to bottom */
-    bottom: 60px; /* Sit on top of the new bottom SideNavbar */
+    position: fixed; 
+    bottom: 60px; 
     left: 0;
     width: 100%;
-    z-index: 1001; /* Above page, below bottom navbar */
+    z-index: 1001; 
   }
 
   .song-info {
-    flex: 1; /* Adjust flex */
+    flex: 1; 
   }
   
   .song-details span {
-    display: none; /* Hide artist name to save space */
+    display: none; 
   }
 
   .player-wrapper {
-    flex: 2; /* Adjust flex */
+    flex: 2; 
   }
 
   .audio-controls-right {
-    flex: 1; /* Adjust flex */
+    flex: 1; 
   }
 }

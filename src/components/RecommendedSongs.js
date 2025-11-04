@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import SongGrid from './SongGrid'
 import './RecommendedSongs.css'
-import mlApi, { normalizeSongData } from '../apiMl'; // Import ML API
+import mlApi, { normalizeSongData } from '../apiMl'; 
 
-export default function RecommendedSongs({ setIsAudioBarVisible, setCurrentSong, token }) {
+export default function RecommendedSongs({ 
+  setIsAudioBarVisible, 
+  setCurrentSong, 
+  token,
+  setLibraryView, // New prop
+  setCurrentPage // New prop
+}) {
   const [songs, setSongs] = useState([]);
   
   useEffect(() => {
     const fetchPopular = async () => {
       try {
-        // Use the /popular endpoint from the ML API
         const response = await mlApi.get('/popular?limit=10');
         const normalized = response.data.map(normalizeSongData);
         setSongs(normalized);
@@ -18,7 +23,13 @@ export default function RecommendedSongs({ setIsAudioBarVisible, setCurrentSong,
       }
     };
     fetchPopular();
-  }, []); // Run once on component mount
+  }, []); 
+
+  // Handler for "See All"
+  const handleSeeAllClick = () => {
+    setLibraryView({ type: 'recommended' });
+    setCurrentPage('library');
+  };
 
   return (
     <div className='recommended-songs'>
@@ -28,7 +39,9 @@ export default function RecommendedSongs({ setIsAudioBarVisible, setCurrentSong,
               setIsAudioBarVisible={setIsAudioBarVisible} 
               setCurrentSong={setCurrentSong}
               token={token}
-              songs={songs} // Pass fetched songs to grid
+              songs={songs} 
+              showSeeAll={true} // Explicitly show
+              onSeeAllClick={handleSeeAllClick} // Pass the handler
             />
         </div>
     </div>

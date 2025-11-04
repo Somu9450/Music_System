@@ -11,9 +11,11 @@ export default function MainPageBody({
   setIsAudioBarVisible, 
   setCurrentSong, 
   token,
-  libraryView, // Point 6
-  setLibraryView, // Point 6
-  setCurrentPage // Point 6
+  libraryView, 
+  setLibraryView, 
+  setCurrentPage,
+  likedSongsMap, // Point 1
+  handleLikeToggle // Point 1
 }) {
   
   const pageBodyClass = currentPage === "library" ? "page-body-library" : "page-body-home";
@@ -25,8 +27,10 @@ export default function MainPageBody({
           setIsAudioBarVisible={setIsAudioBarVisible} 
           setCurrentSong={setCurrentSong}
           token={token}
-          libraryView={libraryView} // Point 6
-          setLibraryView={setLibraryView} // Point 6
+          libraryView={libraryView} 
+          setLibraryView={setLibraryView} 
+          likedSongsMap={likedSongsMap} // Point 1: Pass down
+          handleLikeToggle={handleLikeToggle} // Point 1: Pass down
         />
       ) : (
         <>
@@ -40,21 +44,23 @@ export default function MainPageBody({
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
             token={token}
+            setLibraryView={setLibraryView} // For "See All"
+            setCurrentPage={setCurrentPage} // For "See All"
           />
           <Artists 
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
             token={token}
-            setLibraryView={setLibraryView} // Point 6
-            setCurrentPage={setCurrentPage} // Point 6
+            setLibraryView={setLibraryView} 
+            setCurrentPage={setCurrentPage} 
           />
           <div id="genre-section">
             <Genre 
               setIsAudioBarVisible={setIsAudioBarVisible} 
               setCurrentSong={setCurrentSong}
               token={token}
-              setLibraryView={setLibraryView} // Point 6
-              setCurrentPage={setCurrentPage} // Point 6
+              setLibraryView={setLibraryView} 
+              setCurrentPage={setCurrentPage} 
             />
           </div>
         </>
