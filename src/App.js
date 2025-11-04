@@ -9,9 +9,8 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import CloseIcon from '@mui/icons-material/Close';
 
-// Updated defaultSong to match the normalized ML API structure
 const defaultSong = {
-  id: "5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b", // Using preview ID as a fallback ID
+  id: "5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b", 
   name: "Everyday",
   artist: "Ariana Grande",
   image: "https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900",
@@ -19,26 +18,41 @@ const defaultSong = {
 };
 
 // Main layout component
-function MainAppLayout({ token, onLogout, isAudioBarVisible, setIsAudioBarVisible, currentSong, setCurrentSong }) {
+function MainAppLayout({ 
+  token, 
+  onLogout, 
+  isAudioBarVisible, 
+  setIsAudioBarVisible, 
+  currentSong, 
+  setCurrentSong,
+  libraryView, // Point 6
+  setLibraryView // Point 6
+}) {
   const [currentPage, setCurrentPage] = React.useState('home');
 
   return (
     <div className="App">
-      {/* Pass song setters to TopHeader for search */}
       <TopHeader 
         isLoggedIn={!!token} 
         onLogout={onLogout} 
         setCurrentSong={setCurrentSong}
         setIsAudioBarVisible={setIsAudioBarVisible}
+        token={token} // Point 1: Pass token for login check
       />
       <div className="main-content">
-        <SideNavbar setCurrentPage={setCurrentPage} />
+        <SideNavbar 
+          setCurrentPage={setCurrentPage} 
+          setLibraryView={setLibraryView} // Point 6
+        />
         <div className={`page-body ${currentPage === "library" ? "page-body-library" : "page-body-home"}`}>
           <MainPageBody
             currentPage={currentPage}
             setIsAudioBarVisible={setIsAudioBarVisible}
             setCurrentSong={setCurrentSong}
-            token={token} 
+            token={token} // Point 1: Pass token
+            libraryView={libraryView} // Point 6
+            setLibraryView={setLibraryView} // Point 6
+            setCurrentPage={setCurrentPage} // Point 6
           />
         </div>
       </div>
@@ -71,11 +85,12 @@ function MainAppLayout({ token, onLogout, isAudioBarVisible, setIsAudioBarVisibl
 }
 
 
-// App component handles routing and auth state
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [isAudioBarVisible, setIsAudioBarVisible] = useState(true);
   const [currentSong, setCurrentSong] = useState(defaultSong);
+  // Point 6: Add state to control the Library page
+  const [libraryView, setLibraryView] = useState({ type: 'liked' });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -110,6 +125,8 @@ function App() {
             setIsAudioBarVisible={setIsAudioBarVisible}
             currentSong={currentSong}
             setCurrentSong={setCurrentSong}
+            libraryView={libraryView} // Point 6
+            setLibraryView={setLibraryView} // Point 6
           />
         } 
       />

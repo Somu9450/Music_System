@@ -3,17 +3,21 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
 import ProfileMenu from "./ProfileMenu";
 import React, { useState, useEffect, useCallback } from 'react';
-import mlApi, { normalizeSongData } from '../apiMl'; // Import ML API
-import { debounce } from 'lodash'; // Using lodash for debouncing
+import mlApi, { normalizeSongData } from '../apiMl'; 
+import { debounce } from 'lodash'; 
 
-// Pass in song setters
-export default function TopHeader({ isLoggedIn, onLogout, setCurrentSong, setIsAudioBarVisible }) {
+export default function TopHeader({ 
+  isLoggedIn, 
+  onLogout, 
+  setCurrentSong, 
+  setIsAudioBarVisible,
+  token // Point 1: Added token
+}) {
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const navigate = useNavigate();
 
-  // Debounced search function
   const fetchSearch = useCallback(
     debounce(async (query) => {
       if (query.trim() !== '') {
@@ -21,7 +25,6 @@ export default function TopHeader({ isLoggedIn, onLogout, setCurrentSong, setIsA
           const response = await mlApi.get('/search', {
             params: { query: query }
           });
-          // Normalize the data from the ML API
           const normalizedResults = response.data.map(normalizeSongData);
           setSearchResults(normalizedResults);
         } catch (error) {
@@ -31,7 +34,7 @@ export default function TopHeader({ isLoggedIn, onLogout, setCurrentSong, setIsA
       } else {
         setSearchResults([]);
       }
-    }, 300), // 300ms delay
+    }, 300), 
     []
   );
 
@@ -39,8 +42,13 @@ export default function TopHeader({ isLoggedIn, onLogout, setCurrentSong, setIsA
     fetchSearch(search);
   }, [search, fetchSearch]);
 
-  // Handle clicking a song in the search results
   const handleSongClick = (song) => {
+    // Point 1 & 2: Check for login
+    if (!token) {
+      alert("Please login to play music.");
+      return;
+    }
+    
     setCurrentSong(song);
     setIsAudioBarVisible(true);
     setSearch('');
@@ -62,19 +70,17 @@ export default function TopHeader({ isLoggedIn, onLogout, setCurrentSong, setIsA
             className="search-input"
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} // Delay to allow click
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} 
             value={search}
           />
           <div className="search-lens">
             <SearchIcon fontSize="large" />
           </div>
 
-          {/* Show dropdown if focused and has results */}
           {isSearchFocused && searchResults.length > 0 && (
             <div className="search-results">
               <ul>
                 {searchResults.map(song => (
-                  // Use onMouseDown to trigger before onBlur
                   <li key={song.id} onMouseDown={() => handleSongClick(song)}>
                     {song.name} - <span>{song.artist}</span>
                   </li>

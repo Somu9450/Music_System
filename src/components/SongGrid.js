@@ -3,10 +3,16 @@ import './SongGrid.css';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
-import api from '../api'; // Auth backend API
+import api from '../api'; 
 
-// Accept `songs` prop
-export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true, setCurrentSong, token, songs = [] }) {
+export default function SongGrid({ 
+  prop, 
+  setIsAudioBarVisible, 
+  showSeeAll = true, 
+  setCurrentSong, 
+  token, // Point 1: Added token
+  songs = [] 
+}) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
@@ -21,12 +27,8 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
   const handleRecentApiCall = async (song) => {
     if (token) {
       try {
-        // IMPORTANT: This call sends the *track_id* from the ML API.
-        // Your Auth backend's `recentController` expects a MongoDB `_id`.
-        // This call WILL FAIL unless the backend is updated.
         await api.post('/api/recent/add', { 
-          songId: song.id, // This is the ML API's track_id
-          // Sending full data in case backend creates the song
+          songId: song.id, 
           name: song.name,
           artist: song.artist,
           image: song.image,
@@ -35,21 +37,24 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
         });
       } catch (err) {
         console.warn(
-          "Note: 'Add to Recent' API failed. This is expected if the ML API's track_id",
-          `(${song.id}) does not exist in the Auth backend's 'songs' collection.`,
+          "Note: 'Add to Recent' API failed.",
           err.response?.data?.message
         );
       }
     }
   };
 
-  const handleTileClick = (song);Data => {
+  const handleTileClick = (songData) => {
+    // Point 1: Check for login
+    if (!token) {
+      alert("Please login to play music.");
+      return;
+    }
+    
     if (setIsAudioBarVisible) {
       setIsAudioBarVisible(true);
     }
-    // Pass the full normalized song object up
     setCurrentSong(songData);
-    // Send to "Recently Played"
     handleRecentApiCall(songData);
   };
 
@@ -70,7 +75,6 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
         <div className="arrow-icon" onClick={scrollLeft}><ArrowBackIosIcon fontSize="large" color='primary' /></div>
         
         <div className="song-grid" ref={scrollRef}>
-          {/* Use the 'songs' prop */}
           {songs.length > 0 ? (
             songs.map((song) => (
               <div className="song-tile" key={song.id} onClick={() => handleTileClick(song)}>
@@ -80,7 +84,6 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
               </div>
             ))
           ) : (
-            // Show a loading/empty state
             <p style={{ color: '#aaa', marginLeft: '20px' }}>Loading songs...</p>
           )}
         </div>

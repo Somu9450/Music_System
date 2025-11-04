@@ -6,8 +6,15 @@ import Artists from "./Artists";
 import Genre from "./Genre";
 import LibraryDesign from "./LibraryDesign";
 
-// Note: No 'songData' prop. This is the correct, up-to-date component.
-export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCurrentSong, token }) {
+export default function MainPageBody({ 
+  currentPage, 
+  setIsAudioBarVisible, 
+  setCurrentSong, 
+  token,
+  libraryView, // Point 6
+  setLibraryView, // Point 6
+  setCurrentPage // Point 6
+}) {
   
   const pageBodyClass = currentPage === "library" ? "page-body-library" : "page-body-home";
 
@@ -18,6 +25,8 @@ export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCur
           setIsAudioBarVisible={setIsAudioBarVisible} 
           setCurrentSong={setCurrentSong}
           token={token}
+          libraryView={libraryView} // Point 6
+          setLibraryView={setLibraryView} // Point 6
         />
       ) : (
         <>
@@ -36,12 +45,16 @@ export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCur
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
             token={token}
+            setLibraryView={setLibraryView} // Point 6
+            setCurrentPage={setCurrentPage} // Point 6
           />
           <div id="genre-section">
             <Genre 
               setIsAudioBarVisible={setIsAudioBarVisible} 
               setCurrentSong={setCurrentSong}
               token={token}
+              setLibraryView={setLibraryView} // Point 6
+              setCurrentPage={setCurrentPage} // Point 6
             />
           </div>
         </>

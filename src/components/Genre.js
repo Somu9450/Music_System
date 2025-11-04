@@ -1,39 +1,65 @@
-import React, { useState, useEffect } from 'react'
-import SongGrid from './SongGrid'
-import './Genre.css'
-import mlApi, { normalizeSongData } from '../apiMl'; // Import ML API
+import React from 'react';
+import './Genre.css';
+import mlApi from '../apiMl'; // Import ML API
+import { useEffect, useState } from 'react';
 
-export default function Genre({ setIsAudioBarVisible, setCurrentSong, token }) {
-  const [songs, setSongs] = useState([]);
-  
+// Point 3 & 6: Create a new GenreGrid component
+function GenreGrid({ setLibraryView, setCurrentPage }) {
+  const [genres, setGenres] = useState([]);
+
   useEffect(() => {
-    const fetchGenre = async () => {
+    // Fetch all genres from the ML API
+    const fetchGenres = async () => {
       try {
-        // Use the /songs_by_genre endpoint
-        const response = await mlApi.get('/songs_by_genre', {
-          params: { genre: 'pop', limit: 10 } // Hardcoding 'pop' for this grid
-        });
-        const normalized = response.data.map(normalizeSongData);
-        setSongs(normalized);
+        const response = await mlApi.get('/genres');
+        // Get a subset of genres to display
+        setGenres(response.data.slice(0, 12)); 
       } catch (err) {
-        console.error("Failed to fetch genre songs", err);
+        console.error("Failed to fetch genres", err);
       }
     };
-    fetchGenre();
-  }, []); // Run once
+    fetchGenres();
+  }, []);
+
+  const handleGenreClick = (genreName) => {
+    // Point 6: Set the library view and switch page
+    setLibraryView({ type: 'genre', value: genreName });
+    setCurrentPage('library');
+  };
 
   return (
-    <div className='genre'>
-        <div>
-            <SongGrid 
-              prop="Genre" 
-              setIsAudioBarVisible={setIsAudioBarVisible} 
-              showSeeAll={false} 
-              setCurrentSong={setCurrentSong}
-              token={token}
-              songs={songs} // Pass fetched songs
-            />
-        </div>
+    <>
+      <div className="grid-header">
+        <div className='grid-name'><span>Genre</span></div>
+      </div>
+      <div className="genre-grid-container">
+        {genres.length > 0 ? (
+          genres.map((genreName) => (
+            <div 
+              className="genre-tile" 
+              key={genreName}
+              onClick={() => handleGenreClick(genreName)}
+            >
+              {genreName}
+            </div>
+          ))
+        ) : (
+          <p style={{ color: '#aaa', marginLeft: '20px' }}>Loading genres...</p>
+        )}
+      </div>
+    </>
+  );
+}
+
+
+export default function Genre({ setLibraryView, setCurrentPage }) {
+  return (
+    <div className='genre' id="genre-section">
+      {/* Point 3: Use the new GenreGrid */}
+      <GenreGrid 
+        setLibraryView={setLibraryView} 
+        setCurrentPage={setCurrentPage} 
+      />
     </div>
-  )
+  );
 }

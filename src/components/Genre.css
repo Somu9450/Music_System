@@ -1,0 +1,101 @@
+.genre {
+  margin-top: 20px;
+}
+
+/* Styles for the header */
+.grid-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 1px;
+  margin-right: 2%;
+  margin-top: 2%;
+}
+
+.grid-name{
+  color:white;
+  font-size: 1rem;
+  margin-left: 25px;
+}
+
+/* New styles for flex container and arrows */
+.grid-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.arrow-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.arrow-icon:active {
+  transform: scale(1.2);
+}
+
+/* Updated styles for the scrolling container */
+.genre-grid-container {
+  display: flex; /* Changed from grid */
+  overflow-x: auto; /* Added */
+  gap: 15px;
+  padding: 10px 20px;
+  scroll-behavior: smooth; /* Added */
+  scrollbar-width: none; /* Added */
+  flex-grow: 1; /* Added */
+}
+
+.genre-grid-container::-webkit-scrollbar {
+  display: none; /* Added */
+}
+
+/* Updated styles for the tiles */
+.genre-tile {
+  background: linear-gradient(135deg, #6c63ff, #3d3b78);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-transform: capitalize;
+  
+  /* Added for horizontal scroll */
+  min-width: 150px;
+  flex-shrink: 0;
+}
+
+.genre-tile:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .grid-name {
+    margin-left: 10px;
+  }
+  .genre-grid-container {
+    gap: 10px;
+    padding: 10px;
+  }
+  .genre-tile {
+    font-size: 0.9rem;
+    padding: 15px;
+    min-width: 120px;
+  }
+  .arrow-icon {
+    display: none; /* Hide arrows on mobile */
+  }
+}
