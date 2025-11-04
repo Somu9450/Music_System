@@ -6,7 +6,7 @@ import Artists from "./Artists";
 import Genre from "./Genre";
 import LibraryDesign from "./LibraryDesign";
 
-// Accept and pass token
+// Note: No 'songData' prop. This is the correct, up-to-date component.
 export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCurrentSong, token }) {
   
   const pageBodyClass = currentPage === "library" ? "page-body-library" : "page-body-home";
@@ -17,7 +17,7 @@ export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCur
         <LibraryDesign 
           setIsAudioBarVisible={setIsAudioBarVisible} 
           setCurrentSong={setCurrentSong}
-          token={token} // Pass token
+          token={token}
         />
       ) : (
         <>
@@ -25,23 +25,23 @@ export default function MainPageBody({ currentPage, setIsAudioBarVisible, setCur
           <RecentlyPlayed 
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
-            token={token} // Pass token
+            token={token}
           />
           <RecommendedSongs 
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
-            token={token} // Pass token
+            token={token}
           />
           <Artists 
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
-            token={token} // Pass token
+            token={token}
           />
           <div id="genre-section">
             <Genre 
               setIsAudioBarVisible={setIsAudioBarVisible} 
               setCurrentSong={setCurrentSong}
-              token={token} // Pass token
+              token={token}
             />
           </div>
         </>
