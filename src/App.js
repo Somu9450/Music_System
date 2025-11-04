@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect } from 'react'; // Import useEffect
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import TopHeader from './components/TopHeader';
 import SideNavbar from './components/SideNavbar';
@@ -9,8 +9,9 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import CloseIcon from '@mui/icons-material/Close';
 
+// Updated defaultSong to match the normalized ML API structure
 const defaultSong = {
-  id: "default", // Added an ID
+  id: "5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b", // Using preview ID as a fallback ID
   name: "Everyday",
   artist: "Ariana Grande",
   image: "https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900",
@@ -23,7 +24,13 @@ function MainAppLayout({ token, onLogout, isAudioBarVisible, setIsAudioBarVisibl
 
   return (
     <div className="App">
-      <TopHeader isLoggedIn={!!token} onLogout={onLogout} />
+      {/* Pass song setters to TopHeader for search */}
+      <TopHeader 
+        isLoggedIn={!!token} 
+        onLogout={onLogout} 
+        setCurrentSong={setCurrentSong}
+        setIsAudioBarVisible={setIsAudioBarVisible}
+      />
       <div className="main-content">
         <SideNavbar setCurrentPage={setCurrentPage} />
         <div className={`page-body ${currentPage === "library" ? "page-body-library" : "page-body-home"}`}>
@@ -31,7 +38,7 @@ function MainAppLayout({ token, onLogout, isAudioBarVisible, setIsAudioBarVisibl
             currentPage={currentPage}
             setIsAudioBarVisible={setIsAudioBarVisible}
             setCurrentSong={setCurrentSong}
-            token={token} // Pass token down
+            token={token} 
           />
         </div>
       </div>
@@ -63,15 +70,14 @@ function MainAppLayout({ token, onLogout, isAudioBarVisible, setIsAudioBarVisibl
   );
 }
 
+
 // App component handles routing and auth state
 function App() {
-  // Use token from localStorage as initial state
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [isAudioBarVisible, setIsAudioBarVisible] = useState(true);
   const [currentSong, setCurrentSong] = useState(defaultSong);
   const navigate = useNavigate();
 
-  // Update localStorage when token changes
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
@@ -82,21 +88,18 @@ function App() {
 
   const handleLogin = (newToken) => {
     setToken(newToken);
-    navigate('/'); // On login, go to the main app
+    navigate('/'); 
   };
 
   const handleLogout = () => {
-    setToken(null); // This will trigger the useEffect
-    navigate('/'); // On logout, go to homepage
+    setToken(null); 
+    navigate('/'); 
   };
 
   return (
     <Routes>
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
-      
-      {/* Pass onLogin to SignUp to automatically log in after verification */}
       <Route path="/signup" element={<SignUp onSignUpSuccess={handleLogin} />} />
-
       <Route 
         path="/*" 
         element={

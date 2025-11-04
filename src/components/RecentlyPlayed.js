@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import SongGrid from './SongGrid'
 import './RecentlyPlayed.css'
-import api from '../api'; // Import api
+import api from '../api'; 
+import { normalizeSongData } from '../apiMl'; // Import the normalizer
 
 // Accept token
 export default function RecentlyPlayed({ setIsAudioBarVisible, setCurrentSong, token }) {
@@ -15,8 +16,16 @@ export default function RecentlyPlayed({ setIsAudioBarVisible, setCurrentSong, t
       }
       try {
         const response = await api.get('/api/recent/');
-        // Assuming the API returns an array of song objects
-        setRecentSongs(response.data.songs || []);
+        // Normalize the data from the Auth backend
+        const normalized = response.data.songs.map(song => ({
+          id: song.track_id || song._id, // Prefer track_id
+          _id: song._id,
+          name: song.name,
+          artist: song.artist,
+          image: song.image,
+          src: song.src
+        }));
+        setRecentSongs(normalized || []);
       } catch (err) {
         console.error("Failed to fetch recent songs", err);
         setRecentSongs([]); // Clear on error

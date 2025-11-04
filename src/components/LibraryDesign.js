@@ -2,54 +2,77 @@ import React, { useState, useEffect } from 'react';
 import './LibraryDesign.css';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import api from '../api'; // Import api
+import api from '../api'; // Auth backend API
+// We don't need mlApi here unless we are fetching recommendations
 
-// Accept setCurrentSong and token
-export default function LibraryDesign({ prop = { playlistTitle: "My Playlist", gridTitle: "Liked Songs" }, setIsAudioBarVisible, setCurrentSong, token }) {
+/*
+  This component now relies entirely on your Auth Backend.
+  The songs displayed here are ONLY the songs the user has
+  liked or added to a playlist.
+*/
+export default function LibraryDesign({ 
+  prop = { playlistTitle: "My Playlist", gridTitle: "Liked Songs" }, 
+  setIsAudioBarVisible, 
+  setCurrentSong, 
+  token 
+}) {
   
-  const [likedSongsMap, setLikedSongsMap] = useState({}); // Stores liked status by ID
+  const [likedSongsMap, setLikedSongsMap] = useState({}); // Stores liked status by *track_id*
   const [songList, setSongList] = useState([]); // Stores song objects for "My Playlist"
   const [likedSongsList, setLikedSongsList] = useState([]); // Stores song objects for "Liked Songs"
+  
+  // This state will store the mapping from ML track_id to backend _id
+  const [songIdMap, setSongIdMap] = useState({});
 
-  // Fetch Liked Songs
+  // Fetch Liked Songs from our Auth Backend
   const fetchLikedSongs = async () => {
     if (!token) {
       setLikedSongsMap({});
       setLikedSongsList([]);
+      setSongIdMap({});
       return;
     }
     try {
       const response = await api.get('/api/liked/');
-      const songs = response.data.songs || []; // Assuming API returns { songs: [...] }
+      const songsFromDb = response.data.songs || []; // These are songs from our Auth DB
       
-      // Create a map for quick like-status lookup
-      const likeMap = songs.reduce((acc, song) => {
-        acc[song.id] = true;
-        return acc;
-      }, {});
+      const newLikeMap = {};
+      const newIdMap = {};
       
-      setLikedSongsList(songs);
-      setLikedSongsMap(likeMap);
+      // Normalize the data from the Auth DB
+      const normalizedSongs = songsFromDb.map(song => {
+        // Your Auth DB `Song` model *must* have a `track_id` field
+        // that matches the ML API's `track_id` for this to work.
+        const id = song.track_id || song._id; // Use track_id if present
+
+        newIdMap[id] = song._id; 
+        newLikeMap[id] = true;
+        
+        return {
+          id: id, // Primary ID for the frontend
+          _id: song._id, // Mongo ID for API calls
+          name: song.name,
+          artist: song.artist,
+          image: song.image,
+          src: song.src,
+        };
+      });
+      
+      setLikedSongsList(normalizedSongs);
+      setLikedSongsMap(newLikeMap);
+      setSongIdMap(newIdMap);
+      
+      // For now, "My Playlist" is the same as "Liked Songs"
+      setSongList(normalizedSongs);
+      
     } catch (err) {
       console.error("Failed to fetch liked songs", err);
     }
-  };
-
-  // Fetch playlist songs (using liked songs as placeholder for "My Playlist" for now)
-  const fetchPlaylistSongs = () => {
-    // In a real app, you'd fetch a specific playlist
-    // For now, let's just use the liked songs list
-    setSongList(likedSongsList);
   };
   
   useEffect(() => {
     fetchLikedSongs();
   }, [token]);
-
-  useEffect(() => {
-    // Update playlist when liked songs list changes
-    fetchPlaylistSongs();
-  }, [likedSongsList]);
 
 
   const handleLike = async (e, song) => {
@@ -59,42 +82,56 @@ export default function LibraryDesign({ prop = { playlistTitle: "My Playlist", g
       return;
     }
 
-    const songId = song.id;
-    const isLiked = !!likedSongsMap[songId];
+    const trackId = song.id; 
+    const mongoId = songIdMap[trackId]; // Find the Mongo _id
+    
+    const isLiked = !!likedSongsMap[trackId];
 
     try {
-      if (isLiked) {
-        // UNLIKE: Call Delete API
-        await api.delete(`/api/liked/${songId}`);
-      } else {
-        // LIKE: Call Add API
-        await api.post('/api/liked/add', { songId: songId });
+      if (isLiked && mongoId) {
+        // --- UNLIKE ---
+        // We have the mongoId, so we can delete it
+        await api.delete(`/api/liked/${mongoId}`);
+      } else if (!isLiked) {
+        // --- LIKE ---
+        // This song came from the ML API and doesn't exist in our
+        // Auth backend's 'songs' collection yet.
+        await api.post('/api/liked/add', { 
+          songId: song.id, // This is the ML API's track_id
+          // Send all data so the backend can create the song entry
+          name: song.name,
+          artist: song.artist,
+          image: song.image,
+          src: song.src,
+          track_id: song.id // Explicitly send track_id
+        });
       }
       
-      // Optimistically update UI
-      const newLikedMap = { ...likedSongsMap };
-      if (isLiked) {
-        delete newLikedMap[songId];
-      } else {
-        newLikedMap[songId] = true;
-      }
-      setLikedSongsMap(newLikedMap);
-
-      // Refetch liked songs list to keep UI in sync
+      // Refetch all liked songs to get the single source of truth
       fetchLikedSongs();
 
     } catch (err) {
       console.error("Like error:", err);
-      alert("Failed to update liked songs.");
+      alert("Failed to update liked songs. The backend may need to be updated to handle new song IDs.");
     }
   };
 
-  const handleRecentApiCall = async (songId) => {
+  const handleRecentApiCall = async (song) => {
     if (token) {
       try {
-        await api.post('/api/recent/add', { songId: songId });
+        await api.post('/api/recent/add', { 
+          songId: song.id, // This is the ML API's track_id
+          name: song.name,
+          artist: song.artist,
+          image: song.image,
+          src: song.src,
+          track_id: song.id
+        });
       } catch (err) {
-        console.error("Failed to add to recently played", err.response?.data?.message);
+        console.warn(
+          "Note: 'Add to Recent' API failed.",
+          err.response?.data?.message
+        );
       }
     }
   };
@@ -104,7 +141,7 @@ export default function LibraryDesign({ prop = { playlistTitle: "My Playlist", g
       setIsAudioBarVisible(true);
     }
     setCurrentSong(song);
-    handleRecentApiCall(song.id);
+    handleRecentApiCall(song); // Pass the whole song
   };
 
   return (
@@ -119,7 +156,7 @@ export default function LibraryDesign({ prop = { playlistTitle: "My Playlist", g
           <div className='playlist-content'>
             {songList.length > 0 ? songList.map((song) => (
               <div className="song-row" key={song.id} onClick={() => handleSongClick(song)}>
-                <img src={song.image} alt="Song_poster" />
+                <img src={song.image} alt={song.name} />
                 <div>{song.name} <span>{song.artist}</span></div>
                 
                 <div 
@@ -140,7 +177,7 @@ export default function LibraryDesign({ prop = { playlistTitle: "My Playlist", g
           <div className='grid-menu-content'>
             {likedSongsList.length > 0 ? likedSongsList.map((song) => (
               <div className="menu-tile" key={song.id} onClick={() => handleSongClick(song)}>
-                <img src={song.image} alt='Song_poster' />
+                <img src={song.image} alt={song.name} />
                 <div>{song.name} <span>{song.artist} </span></div>
               </div>
             )) : (

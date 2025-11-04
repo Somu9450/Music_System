@@ -8,9 +8,9 @@
   position: fixed;
   top: 0;
   left: 5%;
-  width: 95%; /* Point 3: Changed from 90% to 95% */
-  height: 70px; /* Point 3: Set a fixed height */
-  box-sizing: border-box; /* Point 3: Include padding in height */
+  width: 95%; 
+  height: 70px; 
+  box-sizing: border-box; 
   z-index: 1000;
 }
 
@@ -29,10 +29,8 @@
   flex: 2;
   display: flex;
   justify-content: center;
-  /* Point 6: Removed properties, moved to wrapper */
 }
 
-/* Point 6: Added search wrapper */
 .search-wrapper {
   position: relative;
   display: flex;
@@ -40,7 +38,7 @@
 }
 
 .search-input {
-  width: 100%; /* Point 6: Changed from 60% to 100% */
+  width: 100%; 
   padding: 3px 14px;
   border-radius: 20px 0px 0px 20px;
   border: none;
@@ -55,11 +53,9 @@
   background-color: #3d3b78;
   border-radius: 0px 20px 20px 0px;
   padding: 1%;
-  min-width: 40px; /* Point 6: Added min-width */
-  cursor: pointer;
+  min-width: 40px; 
 }
 
-/* Point 6: Added search results styling */
 .search-results {
   position: absolute;
   top: 100%; 
@@ -85,16 +81,24 @@
   padding: 10px 15px;
   color: white;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-results li span {
+  color: #b3b3b3;
+  font-size: 0.9em;
 }
 
 .search-results li:hover {
   background-color: #3d3b78;
 }
 
-
 .header-right {
   flex: 1;
   display: flex;
+  justify-content: flex-end; /* Align right on desktop */
   gap: 12px;
 }
 
@@ -112,4 +116,40 @@
 
 .header-btn:hover {
   background-color: #6c63ff;
+}
+
+/* --- RESPONSIVE STYLES --- */
+@media (max-width: 768px) {
+  .top-header {
+    left: 0;
+    width: 100%;
+    height: auto; /* Allow header to grow */
+    flex-wrap: wrap; /* Allow items to wrap */
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header-left {
+    flex-basis: 100%; /* Full width */
+    text-align: center;
+  }
+  
+  .header-left h2 {
+    font-size: 2rem;
+  }
+
+  .header-center {
+    flex-basis: 100%; /* Full width */
+    order: 3; /* Move search bar to the bottom */
+  }
+
+  .search-wrapper {
+    width: 100%;
+  }
+
+  .header-right {
+    flex-basis: 100%; /* Full width */
+    order: 2; /* Move buttons/profile to middle */
+    justify-content: center; /* Center buttons */
+  }
 }

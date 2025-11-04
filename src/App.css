@@ -11,7 +11,7 @@
   flex: 1;
   overflow: hidden;
   margin-left: 5%; /* Account for the 5% fixed sidebar */
-  margin-top: 70px;  /* Account for fixed header (adjust px as needed) */
+  margin-top: 70px;  /* Account for fixed header */
 }
 
 .page-body {
@@ -22,20 +22,16 @@
   box-sizing: border-box; /* Ensure padding is included */
 }
 
-/* Point 3: Add class for homepage background */
 .page-body-home {
-  /* Using the relative path from the CSS file to the asset */
   background-image: url('./components/assets/background-image.png');
-  background-size: 100% auto; /* Cover width, scroll vertically */
+  background-size: 100% auto; 
   background-repeat: repeat-y;
-  background-attachment: scroll; /* Image scrolls with content */
+  background-attachment: scroll; 
 }
 
-/* Point 2: Add class to stop scrolling on library page */
 .page-body-library {
   overflow-y: hidden;
 }
-
 
 .audio-bar {
   display: flex;
@@ -48,13 +44,14 @@
   bottom: 0;
   width: 100%;
   box-sizing: border-box;
+  z-index: 1000; /* Ensure it's above page content */
 }
 
 .song-info {
   display: flex;
   align-items: center;
-  flex: 2; /* Takes 2 parts of the space */
-  min-width: 0; /* Prevents long text from pushing the layout */
+  flex: 2; 
+  min-width: 0; 
 }
 
 .song-info img {
@@ -76,8 +73,7 @@
 }
 
 .player-wrapper {
-  /* Point 1: Made player wider */
-  flex: 10; /* Takes 10 parts of the space */
+  flex: 10; 
   display: flex;
   justify-content: center;
 }
@@ -92,7 +88,7 @@
 }
 
 .audio-controls-right {
-  flex: 2; /* Point 1: Matched .song-info's flex */
+  flex: 2; 
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -106,4 +102,47 @@
 
 .audio-close-btn:hover {
   color: white;
+}
+
+/* --- RESPONSIVE STYLES --- */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0; /* Remove sidebar margin */
+    /* Adjust margin-top for new header height */
+    margin-top: 140px; 
+    /* Add padding for new bottom nav and audio bar */
+    padding-bottom: 120px; 
+  }
+
+  .page-body {
+    padding: 10px; /* Reduce padding on mobile */
+  }
+  
+  .page-body-library {
+    overflow-y: auto; /* Allow library to scroll on mobile */
+  }
+
+  .audio-bar {
+    position: fixed; /* Fix audio bar to bottom */
+    bottom: 60px; /* Sit on top of the new bottom SideNavbar */
+    left: 0;
+    width: 100%;
+    z-index: 1001; /* Above page, below bottom navbar */
+  }
+
+  .song-info {
+    flex: 1; /* Adjust flex */
+  }
+  
+  .song-details span {
+    display: none; /* Hide artist name to save space */
+  }
+
+  .player-wrapper {
+    flex: 2; /* Adjust flex */
+  }
+
+  .audio-controls-right {
+    flex: 1; /* Adjust flex */
+  }
 }

@@ -10,7 +10,7 @@
 
 .grid-name{
   color:white;
-  font-size: 1.7rem;
+  font-size: 1rem;
   margin-left: 25px;
 }
 
@@ -19,6 +19,7 @@
   font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
+  margin-right: 10px; /* Added margin */
 }
 
 .see-all:hover {
@@ -76,31 +77,9 @@
   font-size: 1rem;
   flex-shrink: 0;
   flex-wrap: wrap;
+  width: 160px; /* Set a fixed width for consistency */
+  min-width: 160px; /* Override min-width */
 }
-
-.song-tile:hover{
-  background: linear-gradient(155deg, #24224f, #2f2b79, #27264d, #2f2b79);
-}
-
-.song-tile:active{
-  transform: scale(1.05) translateY(3px);
-  transition: transform 0.1s ease;
-}
-
-/*.song-tile {
-  flex: 0 0 140px;
-  background: linear-gradient(155deg, #24224f, #2f2b79, #27264d, #2f2b79);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 8px;
-  border-radius: 6px;
-  color: white;
-  text-align: center;
-}
-*/
 
 .song-tile img {
   width: 100%;
@@ -109,11 +88,14 @@
   border-radius: 4px;
 }
 
-.song div {
+.song-tile div {
   display: block;
   font-size: 0.95rem;
   font-weight: 500;
   margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .song-tile span {
@@ -121,4 +103,33 @@
   font-size: 0.8rem;
   color: #aaa;
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- RESPONSIVE STYLES --- */
+@media (max-width: 768px) {
+  .grid-name {
+    margin-left: 10px;
+  }
+  
+  .song-grid {
+    padding: 0 10px;
+    gap: 15px;
+  }
+
+  .song-tile {
+    width: 130px; /* Make tiles smaller on mobile */
+    min-width: 130px;
+  }
+
+  .song-tile img {
+    height: 110px;
+  }
+
+  .arrow-icon {
+    /* Hide arrows on mobile, scrolling is touch-based */
+    display: none; 
+  }
 }

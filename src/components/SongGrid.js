@@ -3,18 +3,9 @@ import './SongGrid.css';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
-import api from '../api'; // Import api
+import api from '../api'; // Auth backend API
 
-// Mock data (replace with prop if needed)
-const mockSong = {
-  id: "629f5f0b4f8d5a1b3c8f1e5d", // Example: A real ID from your DB for testing
-  name: "Everyday",
-  artist: "Ariana Grande",
-  image: "https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900",
-  src: "https://p.scdn.co/mp3-preview/5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b?cid=774b29d4f13844c495f206cafdad9c86"
-};
-
-// Accept `songs` prop and `token`
+// Accept `songs` prop
 export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true, setCurrentSong, token, songs = [] }) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -27,30 +18,44 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
     scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
-  const handleRecentApiCall = async (songId) => {
+  const handleRecentApiCall = async (song) => {
     if (token) {
       try {
-        await api.post('/api/recent/add', { songId: songId });
+        // IMPORTANT: This call sends the *track_id* from the ML API.
+        // Your Auth backend's `recentController` expects a MongoDB `_id`.
+        // This call WILL FAIL unless the backend is updated.
+        await api.post('/api/recent/add', { 
+          songId: song.id, // This is the ML API's track_id
+          // Sending full data in case backend creates the song
+          name: song.name,
+          artist: song.artist,
+          image: song.image,
+          src: song.src,
+          track_id: song.id 
+        });
       } catch (err) {
-        console.error("Failed to add to recently played", err.response?.data?.message);
+        console.warn(
+          "Note: 'Add to Recent' API failed. This is expected if the ML API's track_id",
+          `(${song.id}) does not exist in the Auth backend's 'songs' collection.`,
+          err.response?.data?.message
+        );
       }
     }
   };
 
-  const handleTileClick = (song) => {
+  const handleTileClick = (song);Data => {
     if (setIsAudioBarVisible) {
       setIsAudioBarVisible(true);
     }
-    setCurrentSong(song);
-    handleRecentApiCall(song.id); // Call recent API
+    // Pass the full normalized song object up
+    setCurrentSong(songData);
+    // Send to "Recently Played"
+    handleRecentApiCall(songData);
   };
 
   const handleSeeAllClick = () => {
      navigate(`/library/${prop}`);
   };
-
-  // Use fetched songs if available, otherwise use mock data
-  const songsToDisplay = songs && songs.length > 0 ? songs : [...Array(10)].map(() => mockSong);
 
   return (
     <>
@@ -63,15 +68,23 @@ export default function SongGrid({ prop, setIsAudioBarVisible, showSeeAll = true
 
       <div className="grid-flex">
         <div className="arrow-icon" onClick={scrollLeft}><ArrowBackIosIcon fontSize="large" color='primary' /></div>
+        
         <div className="song-grid" ref={scrollRef}>
-          {songsToDisplay.map((song, i) => (
-            <div className="song-tile" key={song.id || i} onClick={() => handleTileClick(song)}>
-              <img src={song.image || mockSong.image} alt="Song_poster" />
-              <div>{song.name || "Song Title"}</div>
-              <span>{song.artist || "Song Artist"}</span>
-            </div>
-          ))}
+          {/* Use the 'songs' prop */}
+          {songs.length > 0 ? (
+            songs.map((song) => (
+              <div className="song-tile" key={song.id} onClick={() => handleTileClick(song)}>
+                <img src={song.image} alt={song.name} />
+                <div>{song.name}</div>
+                <span>{song.artist}</span>
+              </div>
+            ))
+          ) : (
+            // Show a loading/empty state
+            <p style={{ color: '#aaa', marginLeft: '20px' }}>Loading songs...</p>
+          )}
         </div>
+        
         <div className="arrow-icon" onClick={scrollRight}><ArrowForwardIosIcon fontSize="large" color='primary' /></div>
       </div>
     </>
