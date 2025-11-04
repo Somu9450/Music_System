@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// The base URL for the ML/Recommendation API
 const ML_BASE_URL = 'https://music-recommendation-system-71od.onrender.com';
 
 const mlApi = axios.create({
@@ -10,18 +9,17 @@ const mlApi = axios.create({
   },
 });
 
-/* Helper function to "normalize" song data from the ML API
-  into the format your frontend (audio player) expects.
+/* This function is correct. It prepares the data for the frontend.
+  We will use these keys to map to the backend keys in our API calls.
 */
 export const normalizeSongData = (mlSong) => {
   return {
-    id: mlSong.track_id, // Use track_id as the unique ID
+    id: mlSong.track_id, 
     name: mlSong.track_name,
     artist: mlSong.artists,
     image: mlSong.img,
     src: mlSong.preview,
-    // You can add other fields here if needed, e.g., album_name
-    album_name: mlSong.album_name,
+    album_name: mlSong.album_name, // Make sure this is included
   };
 };
 

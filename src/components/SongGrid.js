@@ -12,29 +12,36 @@ export default function SongGrid({
   setCurrentSong, 
   token, 
   songs = [],
-  onSeeAllClick // New prop
+  onSeeAllClick 
 }) {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
   };
 
   const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
   };
 
   const handleRecentApiCall = async (song) => {
     if (token) {
       try {
+        // --- FIX HERE ---
+        // Send the correct keys to the 'recently played' endpoint
         await api.post('/api/recent/add', { 
-          songId: song.id, 
-          name: song.name,
-          artist: song.artist,
-          image: song.image,
-          src: song.src,
-          track_id: song.id 
+          songId: song.id, // The ID to find/create by
+          track_id: song.id,
+          track_name: song.name,
+          artists: song.artist,
+          album_name: song.album_name,
+          img: song.image,
+          src: song.src
         });
       } catch (err) {
         console.warn(
@@ -58,7 +65,6 @@ export default function SongGrid({
     handleRecentApiCall(song);
   };
 
-  // Use the custom handler if provided, otherwise default
   const handleSeeAll = onSeeAllClick ? onSeeAllClick : () => {
      navigate(`/library/${prop}`);
   };
