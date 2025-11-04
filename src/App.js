@@ -33,7 +33,7 @@ function MainAppLayout({
   likedSongsMap, // Point 1
   handleLikeToggle // Point 1
 }) {
-  const [currentPage, setCurrentPage] = React.useState('home');
+  const [currentPage, setCurrentPage] = useState('home');
 
   return (
     <div className="App">

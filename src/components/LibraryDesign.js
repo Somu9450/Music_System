@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './LibraryDesign.css';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import './LibraryDesign.css'; // Keep this for container styles
+import LibraryPlaylist from './LibraryPlaylist'; // Import new component
+import LibraryGridMenu from './LibraryGridMenu'; // Import new component
 import api from '../api'; // Auth backend API
 import mlApi, { normalizeSongData } from '../apiMl'; // ML backend API
 
@@ -25,7 +25,7 @@ export default function LibraryDesign({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Main data fetching logic based on libraryView
+  // Main data fetching logic (this stays here, as this is the "container")
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -149,83 +149,33 @@ export default function LibraryDesign({
     }
   };
   
-  // Helper to render the grid content
-  const renderGridItem = (item) => {
-    switch (item.type) {
-      case 'song':
-        return (
-          <div className="menu-tile" key={item.data.id} onClick={() => handleGridClick(item)}>
-            <img src={item.data.image} alt={item.data.name} />
-            <div>{item.data.name} <span>{item.data.artist} </span></div>
-          </div>
-        );
-      case 'genre':
-        return (
-          <div className="genre-tile-library" key={item.name} onClick={() => handleGridClick(item)}>
-            {item.name}
-          </div>
-        );
-      case 'artist':
-        return (
-          <div className="artist-tile-library" key={item.name} onClick={() => handleGridClick(item)}>
-            <img src={item.image} alt={item.name} />
-            <span>{item.name}</span>
-          </div>
-        );
-      // New grid item for "artist name only"
-      case 'artist_name_only':
-        return (
-          <div className="genre-tile-library" key={item.name} onClick={() => handleGridClick(item)}>
-            {item.name}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
+  // All the rendering logic is removed from here
+  // and replaced with the new components.
   return (
     <div className='page-container'>
       <div className='page-head'>
         <h1>My Library</h1>
       </div>
 
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className='playlist-grid'>
-          <div className='playlist'>
-            <div className='playlist-head'>{playlistTitle}</div>
-            <div className='playlist-content'>
-              {playlistContent.length > 0 ? playlistContent.map((song) => (
-                <div className="song-row" key={song.id} onClick={() => handleSongClick(song)}>
-                  <img src={song.image} alt="Song_poster" />
-                  <div>{song.name} <span>{song.artist}</span></div>
-                  
-                  {/* Point 1: Use global like state and handler */}
-                  <div 
-                    className={`heart-icon ${likedSongsMap[song.id] ? 'liked' : ''}`} 
-                    onClick={(e) => handleLikeToggle(song, e)}
-                  >
-                    {likedSongsMap[song.id] ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                  </div>
-                </div>
-              )) : (
-                <p style={{padding: '20px', color: '#aaa'}}>No songs found.</p>
-              )}
-            </div>
-          </div>
-
-          <div className='grid-menus'>
-            <div className='grid-menu-head'>{gridTitle}</div>
-            <div className='grid-menu-content'>
-              {gridContent.length > 0 ? gridContent.map(renderGridItem) : (
-                <p style={{padding: '20px', color: '#aaa'}}>Nothing to show.</p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <div className='playlist-grid'>
+        {/* Use the new Playlist component */}
+        <LibraryPlaylist
+          title={playlistTitle}
+          songs={playlistContent}
+          isLoading={isLoading}
+          handleSongClick={handleSongClick}
+          likedSongsMap={likedSongsMap}
+          handleLikeToggle={handleLikeToggle}
+        />
+        
+        {/* Use the new GridMenu component */}
+        <LibraryGridMenu
+          title={gridTitle}
+          items={gridContent}
+          isLoading={isLoading}
+          handleGridClick={handleGridClick}
+        />
+      </div>
     </div>
   );
 }
