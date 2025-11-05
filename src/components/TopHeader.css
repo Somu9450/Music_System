@@ -64,6 +64,11 @@
   border-radius: 0px 20px 20px 0px;
   padding: 1%;
   min-width: 40px; 
+  cursor: pointer;
+}
+
+.search-lens:active{
+  transform: scale(1.1);
 }
 
 .search-results {
@@ -74,11 +79,12 @@
   background-color: #2a2a3d;
   border: 1px solid #3d3b78;
   border-top: none;
-  border-radius: 0 0 10px 10px;
+  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1001;
   max-height: 300px;
   overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .search-results ul {
@@ -93,7 +99,6 @@
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .search-results li span {

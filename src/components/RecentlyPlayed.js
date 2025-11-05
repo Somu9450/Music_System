@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import SongGrid from './SongGrid'
 import './RecentlyPlayed.css'
+import HistoryIcon from '@mui/icons-material/History';
 import api from '../api'; 
 // import { normalizeSongData } from '../apiMl'; // Not needed here
 
@@ -29,8 +30,7 @@ export default function RecentlyPlayed({ setIsAudioBarVisible, setCurrentSong, t
           artist: song.artists,    // ✅ Was 'artist'
           image: song.img,         // ✅ Was 'image'
           src: song.src
-        }))
-        .reverse(); // To show latest first
+        })); // .reverse() was removed here
 
         setRecentSongs(normalized || []);
       } catch (err) {

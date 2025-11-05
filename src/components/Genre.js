@@ -2,6 +2,7 @@ import React, { useRef } from 'react'; // Make sure to import useRef
 import './Genre.css';
 import mlApi from '../apiMl'; 
 import { useEffect, useState } from 'react';
+import AlbumIcon from '@mui/icons-material/Album';
 // Import icons for arrows
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -43,7 +44,7 @@ export default function Genre({ setLibraryView, setCurrentPage }) {
   return (
     <div className='genre' id="genre-section">
       <div className="grid-header">
-        <div className='grid-name'><span>Genre</span></div>
+        <div className='grid-name'><span>Genre <AlbumIcon /></span></div>
       </div>
       
       {/* This is the new structure with arrows */}
