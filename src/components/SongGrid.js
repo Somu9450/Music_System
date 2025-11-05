@@ -29,24 +29,23 @@ export default function SongGrid({
     }
   };
 
+  // --- THIS FUNCTION IS NOW FIXED ---
   const handleRecentApiCall = async (song) => {
     if (token) {
       try {
-        // --- FIX HERE ---
-        // Send the correct keys to the 'recently played' endpoint
+        // Send the keys the backend controller (recentController.js) expects
         await api.post('/api/recent/add', { 
-          songId: song.id, // The ID to find/create by
-          track_id: song.id,
-          track_name: song.name,
-          artists: song.artist,
-          album_name: song.album_name,
-          img: song.image,
-          src: song.src
+          songId: song.id,           // ✅ Backend expects 'songId'
+          title: song.name,          // ✅ Backend expects 'title'
+          artist: song.artist,       // ✅ Backend expects 'artist'
+          album: song.album_name || '', // ✅ Backend expects 'album'
+          coverImage: song.image,    // ✅ Backend expects 'coverImage'
+          preview: song.src          // ✅ Backend expects 'preview'
         });
       } catch (err) {
         console.warn(
           "Note: 'Add to Recent' API failed.",
-          err.response?.data?.message
+          err.response?.data?.message || err.message
         );
       }
     }
@@ -62,7 +61,7 @@ export default function SongGrid({
       setIsAudioBarVisible(true);
     }
     setCurrentSong(song);
-    handleRecentApiCall(song);
+    handleRecentApiCall(song); // This will now work
   };
 
   const handleSeeAll = onSeeAllClick ? onSeeAllClick : () => {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import './LibraryDesign.css'; // Keep this for container styles
-import LibraryPlaylist from './LibraryPlaylist'; // Import new component
-import LibraryGridMenu from './LibraryGridMenu'; // Import new component
-import api from '../api'; // Auth backend API
-import mlApi, { normalizeSongData, normalizeArtistData } from '../apiMl'; // ML backend API
+import './LibraryDesign.css'; 
+import LibraryPlaylist from './LibraryPlaylist'; 
+import LibraryGridMenu from './LibraryGridMenu'; 
+import api from '../api'; 
+import mlApi, { normalizeSongData, normalizeArtistData } from '../apiMl'; // Import updated normalizer
 
 export default function LibraryDesign({ 
   token, 
@@ -11,8 +11,8 @@ export default function LibraryDesign({
   setIsAudioBarVisible, 
   libraryView, 
   setLibraryView,
-  likedSongsMap, // Point 1: Receive from props
-  handleLikeToggle // Point 1: Receive from props
+  likedSongsMap, 
+  handleLikeToggle 
 }) {
   
   const [playlistTitle, setPlaylistTitle] = useState("Liked Songs");
@@ -21,31 +21,24 @@ export default function LibraryDesign({
   const [gridContent, setGridContent] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
-
-  // New state to hold our dynamic artist list
   const [allArtists, setAllArtists] = useState([]);
 
-  // Fetch all artists once when the component loads
   useEffect(() => {
     const fetchAllArtists = async () => {
-      // Fetch a list of 20 artists to use in the grid menus
       const artistList = await normalizeArtistData(20);
       setAllArtists(artistList);
     };
     fetchAllArtists();
   }, []);
 
-  // Main data fetching logic
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
 
-      // Utility function to get 10 random artists, excluding a specific one
       const getOtherArtists = (excludeName = null) => {
         const otherArtists = allArtists.filter(
           a => a.name.toLowerCase() !== excludeName?.toLowerCase()
         );
-        // Simple shuffle and take 10
         return otherArtists.sort(() => 0.5 - Math.random()).slice(0, 10);
       };
 
@@ -60,14 +53,15 @@ export default function LibraryDesign({
           return;
         }
         try {
+          // --- FIX 1: 'GET /api/liked/' returns an array directly ---
           const response = await api.get('/api/liked/');
-          const likedSongs = (response.data.songs || []).map(song => ({
-            ...normalizeSongData(song),
-            id: song.track_id || song._id, 
-          }));
+          
+          // Use response.data, not response.data.songs
+          // Also, use the master normalizeSongData function
+          const likedSongs = (response.data || []).map(normalizeSongData);
+          
           setPlaylistContent(likedSongs);
 
-          // Fetch recommendations based on first liked song
           if (likedSongs.length > 0) {
             const recResponse = await mlApi.get(`/recommend/${likedSongs[0].id}?limit=10`);
             const recs = recResponse.data.similar_songs.map(normalizeSongData);
@@ -80,13 +74,12 @@ export default function LibraryDesign({
         }
 
       } else if (libraryView.type === 'genre') {
+        // ... (no changes in this block)
         setPlaylistTitle(libraryView.value);
         setGridTitle("Other Genres");
-
         try {
           const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=50`);
           setPlaylistContent(songsResponse.data.map(normalizeSongData));
-
           const genresResponse = await mlApi.get('/genres');
           const otherGenres = genresResponse.data.filter(g => g.toLowerCase() !== libraryView.value.toLowerCase());
           setGridContent(otherGenres.map(g => ({ type: 'genre', name: g })));
@@ -95,59 +88,48 @@ export default function LibraryDesign({
         }
 
       } else if (libraryView.type === 'artist') {
+        // ... (no changes in this block)
         const artistName = libraryView.value;
         setPlaylistTitle(artistName);
         setGridTitle("Other Artists");
-
         try {
-          // Fetch all songs for this artist by search
           const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=50`);
-          // Filter songs to match the artist name exactly
           const artistSongs = songsResponse.data
             .map(normalizeSongData)
             .filter(song => song.artist.toLowerCase() === artistName.toLowerCase());
-
           setPlaylistContent(artistSongs);
-
-          // Set grid content to 10 other artists
           setGridContent(getOtherArtists(artistName));
-
         } catch (err) {
           console.error("Failed to fetch artist data", err);
         }
       
       } else if (libraryView.type === 'recommended') {
+        // ... (no changes in this block)
         setPlaylistTitle("Recommended Songs");
-        setGridTitle("All Artists"); // As requested
-
+        setGridTitle("All Artists"); 
         try {
           const songsResponse = await mlApi.get('/popular?limit=50');
           setPlaylistContent(songsResponse.data.map(normalizeSongData));
-
-          // Use the dynamic artist list
-          setGridContent(allArtists.slice(0, 10)); // Show first 10
-          
+          setGridContent(allArtists.slice(0, 10)); 
         } catch (err) {
           console.error("Failed to fetch recommended/artist data", err);
         }
       
-      // New view for "See All" artists
       } else if (libraryView.type === 'artists_all') {
+        // ... (no changes in this block)
         setPlaylistTitle("All Artists");
-        setPlaylistContent([]); // No songs selected yet
+        setPlaylistContent([]); 
         setGridTitle("All Artists");
-        // Show the first 10 artists from our fetched list
         setGridContent(allArtists.slice(0, 10));
       }
 
       setIsLoading(false);
     };
 
-    // Only run fetch logic if we have artists to display (for artist-related views)
     if (allArtists.length > 0 || (libraryView.type !== 'artist' && libraryView.type !== 'artists_all' && libraryView.type !== 'recommended')) {
       fetchData();
     }
-  }, [libraryView, token, allArtists]); // Rerun when view, token, or artist list changes
+  }, [libraryView, token, allArtists]); 
 
   // Song click handler
   const handleSongClick = (song) => {
@@ -159,28 +141,27 @@ export default function LibraryDesign({
       setIsAudioBarVisible(true);
     }
     setCurrentSong(song);
-    // Add to recent
+    
+    // --- FIX 2: Send correct keys to '/api/recent/add' ---
     if (token) {
       api.post('/api/recent/add', { 
-          songId: song.id, // The ID to find/create by
-          track_id: song.id,
-          track_name: song.name,
-          artists: song.artist,
-          album_name: song.album_name,
-          img: song.image,
-          src: song.src
-        }).catch(err => console.warn("Failed to add to recent", err));
+          songId: song.id,
+          title: song.name,
+          artist: song.artist,
+          album: song.album_name || '',
+          coverImage: song.image,
+          preview: song.src
+        }).catch(err => console.warn("Failed to add to recent", err.response?.data?.message || err.message));
     }
   };
 
   // Grid click handler
   const handleGridClick = (item) => {
     if (item.type === 'song') {
-      handleSongClick(item.data);
+      handleSongClick(item.data); // This now works
     } else if (item.type === 'genre') {
       setLibraryView({ type: 'genre', value: item.name });
     } else if (item.type === 'artist' || item.type === 'artist_name_only') {
-      // This click now triggers the "reshuffle" by updating the view
       setLibraryView({ type: 'artist', value: item.name });
     }
   };
@@ -199,7 +180,6 @@ export default function LibraryDesign({
           handleSongClick={handleSongClick}
           likedSongsMap={likedSongsMap}
           handleLikeToggle={handleLikeToggle}
-          // Pass a message if no artist is selected
           customEmptyMessage={
             libraryView.type === 'artists_all' ? 'Select an artist to see their songs.' : 'No songs found.'
           }

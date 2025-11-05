@@ -18,10 +18,10 @@ const defaultSong = {
   artist: "Ariana Grande",
   image: "https://shop.umusic.com.au/cdn/shop/files/Ariana_Grande_Square_ee3066c3-03a7-4f2a-9e46-343debe41811.jpg?v=1750312888&width=900",
   src: "https://p.scdn.co/mp3-preview/5c00aeb796dc03f5abcc276ad7a0a7f7c1b4f01b?cid=774b29d4f13844c495f206cafdad9c86",
-  album_name: "Dangerous Woman"
+  album_name: "Dangerous Woman" 
 };
 
-// Helper function to decode JWT
+// Helper function to decode JWT (no changes here)
 function jwtDecode(token) {
   try {
     const base64Url = token.split('.')[1];
@@ -41,11 +41,12 @@ function jwtDecode(token) {
   }
 }
 
+
 // --- MainAppLayout ---
-// (A) Changed 'user' prop to 'username' string prop
+// (FIX 1: Pass 'username' prop)
 function MainAppLayout({ 
   token, 
-  username, // <-- CHANGED
+  username, // <-- CHANGED from 'user' object to 'username' string
   onLogout, 
   isAudioBarVisible, 
   setIsAudioBarVisible, 
@@ -62,7 +63,7 @@ function MainAppLayout({
     <div className="App">
       <TopHeader 
         isLoggedIn={!!token} 
-        username={username} // <-- CHANGED
+        username={username} // <-- PASS 'username'
         onLogout={onLogout} 
         setCurrentSong={setCurrentSong}
         setIsAudioBarVisible={setIsAudioBarVisible}
@@ -90,7 +91,6 @@ function MainAppLayout({
 
       {isAudioBarVisible && (
         <div className="audio-bar">
-          {/* ... audio bar content ... (unchanged) */}
           <div className="song-info">
             <img
               src={currentSong.image}
@@ -125,7 +125,7 @@ function MainAppLayout({
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [username, setUsername] = useState(null); // <-- (B) CHANGED to username string state
+  const [username, setUsername] = useState(null); // <-- (FIX 1) Use 'username' string state
   const [isAudioBarVisible, setIsAudioBarVisible] = useState(true);
   const [currentSong, setCurrentSong] = useState(defaultSong);
   const [libraryView, setLibraryView] = useState({ type: 'liked' });
@@ -133,87 +133,87 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLiked = async () => {
-      // ... fetchLiked logic (unchanged) ...
-       if (token) {
-        try {
-          const response = await api.get('/api/liked/');
-          const songsFromDb = Array.isArray(response.data.songs) ? response.data.songs : 
-                            Array.isArray(response.data) ? response.data : [];
-          
-          const likeMap = songsFromDb.reduce((acc, song) => {
-            if (song.track_id) {
-              acc[song.track_id] = true;
-            }
-            return acc;
-          }, {});
-          setLikedSongsMap(likeMap);
-        } catch (err) {
-          console.error("Failed to fetch liked songs status", err);
-        }
-      } else {
-        setLikedSongsMap({});
-      }
-    };
-    fetchLiked();
-
-    // (C) SET USERNAME WHEN TOKEN CHANGES
+  const fetchLiked = async () => {
     if (token) {
-      const decodedUser = jwtDecode(token);
-      if (decodedUser) {
-        // Assuming the payload has a 'name' field
-        setUsername(decodedUser.name); // <-- CHANGED
+      try {
+        const response = await api.get('/api/liked/');
+        // Use response.data directly if it's the array, or response.data.songs
+        const songsFromDb = Array.isArray(response.data.songs) ? response.data.songs : 
+                            Array.isArray(response.data) ? response.data : [];
+        const likeMap = songsFromDb.reduce((acc, song) => {
+          acc[song.track_id] = true;
+          return acc;
+        }, {});
+        setLikedSongsMap(likeMap);
+      } catch (err) {
+        console.error("Failed to fetch liked songs status", err);
       }
     } else {
-      setUsername(null); // <-- CHANGED
+      setLikedSongsMap({});
     }
-  }, [token]);
+  };
+  fetchLiked();
+
+  // (FIX 1: Set username from 'decodedUser.username')
+  if (token) {
+      const decodedUser = jwtDecode(token);
+      if (decodedUser) {
+        // The token payload has 'username', not 'name'
+        setUsername(decodedUser.username); // ✅ FIXED
+      }
+    } else {
+      setUsername(null);
+    }
+}, [token]);
 
 
-  // (D) handleLikeToggle (Fixed 'unlike' logic)
+  // (FIX 2: 'handleLikeToggle' UNLIKE logic)
   const handleLikeToggle = async (song, e) => {
-    if (e) e.stopPropagation();
+  if (e) e.stopPropagation();
 
-    if (!token) {
-      alert("Please log in to like songs");
-      return;
-    }
+  if (!token) {
+    alert("Please log in to like songs");
+    return;
+  }
 
-    if (!song || !song.id) {
-      console.error("Cannot like a song with no ID", song);
-      return;
-    }
+  if (!song || !song.id) {
+    console.error("Cannot like a song with no ID", song);
+    return;
+  }
 
-    const trackId = song.id;
-    const isLiked = !!likedSongsMap[trackId];
+  const trackId = song.id;
+  const isLiked = !!likedSongsMap[trackId];
+
 
     try {
       if (isLiked) {
-        // --- UNLIKE (Fixed) ---
-        await api.delete(`/api/liked/${trackId}`);
-        
-      } else {
-        // --- LIKE (Fixed) ---
-        await api.post('/api/liked/add', { 
-            songId: trackId,
-            title: song.name,
-            artist: song.artist, 
-            album: song.album || song.album_name || '',
-            coverImage: song.image,
-            preview: song.src
-        });
-      }
-      
-      setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
+        // --- UNLIKE (FIXED) ---
+        // Just send the DELETE request. No need to GET first.
+        // The backend endpoint is /api/liked/:songId
+        await api.delete(`/api/liked/${trackId}`); // ✅ FIXED
 
-      if (libraryView.type === 'liked') {
-        setLibraryView({ type: 'liked', refresh: Date.now() });
-      }
-    } catch (err) {
-      console.error("Like error:", err.response ? err.response.data : err);
-      alert("Failed to update liked songs.");
+      } else {
+        // --- LIKE (This was already correct) ---
+        await api.post('/api/liked/add', { 
+            songId: trackId,           
+            title: song.name,          
+            artist: song.artist, 
+            album: song.album || song.album_name || '',   
+            coverImage: song.image,    
+            preview: song.src          
+            });
+          }
+      
+    setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
+
+    if (libraryView.type === 'liked') {
+      setLibraryView({ type: 'liked', refresh: Date.now() });
     }
-  };
+  } catch (err) {
+    console.error("Like error:", err.response ? err.response.data : err);
+    alert("Failed to update liked songs.");
+  }
+};
 
 
   useEffect(() => {
@@ -226,17 +226,17 @@ function App() {
 
   const handleLogin = (newToken) => {
     setToken(newToken);
-    // (E) Set username on login
+    // (FIX 1: Set username from 'decodedUser.username')
     const decodedUser = jwtDecode(newToken);
     if (decodedUser) {
-      setUsername(decodedUser.name); // <-- CHANGED
+      setUsername(decodedUser.username); // ✅ FIXED
     }
     navigate('/'); 
   };
 
   const handleLogout = () => {
     setToken(null); 
-    setUsername(null); // (F) Clear username on logout
+    setUsername(null); // (FIX 1) Clear username
     navigate('/'); 
   };
 
@@ -249,7 +249,7 @@ function App() {
         element={
           <MainAppLayout
             token={token}
-            username={username} // <-- (G) PASS USERNAME
+            username={username} // <-- (FIX 1) Pass 'username'
             onLogout={handleLogout}
             isAudioBarVisible={isAudioBarVisible}
             setIsAudioBarVisible={setIsAudioBarVisible}
