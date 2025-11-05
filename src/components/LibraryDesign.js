@@ -62,13 +62,15 @@ export default function LibraryDesign({
           
           setPlaylistContent(likedSongs);
 
-          if (likedSongs.length > 0) {
-            const recResponse = await mlApi.get(`/recommend/${likedSongs[0].id}?limit=10`);
-            const recs = recResponse.data.similar_songs.map(getSongData);
-            setGridContent(recs.map(song => ({ type: 'song', data: song })));
-          } else {
-            setGridContent([]);
-          }
+          // const recResponse = await mlApi.get(`/recommend/${likedSongs[0].id}?limit=10`);
+          //   const recs = recResponse.data.similar_songs.map(getSongData);
+          //   setGridContent(recs.map(song => ({ type: 'song', data: song })));
+
+            
+          // Fetch popular songs (same as home page) instead of liked-based recommendations
+           const popularResponse = await mlApi.get('/popular?limit=30');
+           const popularSongs = popularResponse.data.map(getSongData);
+           setGridContent(popularSongs.map(song => ({ type: 'song', data: song })));
         } catch (err) {
           console.error("Failed to fetch liked songs or recommendations", err);
         }
@@ -78,7 +80,7 @@ export default function LibraryDesign({
         setPlaylistTitle(libraryView.value);
         setGridTitle("Other Genres");
         try {
-          const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=50`);
+          const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=100`);
           setPlaylistContent(songsResponse.data.map(getSongData));
           const genresResponse = await mlApi.get('/genres');
           const otherGenres = genresResponse.data.filter(g => g.toLowerCase() !== libraryView.value.toLowerCase());
@@ -93,7 +95,7 @@ export default function LibraryDesign({
         setPlaylistTitle(artistName);
         setGridTitle("Other Artists");
         try {
-          const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=50`);
+          const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=100`);
           const artistSongs = songsResponse.data
             .map(getSongData)
             .filter(song => song.artist.toLowerCase() === artistName.toLowerCase());
@@ -110,7 +112,7 @@ export default function LibraryDesign({
         try {
           const songsResponse = await mlApi.get('/popular?limit=50');
           setPlaylistContent(songsResponse.data.map(getSongData));
-          setGridContent(allArtists.slice(0, 10)); 
+          setGridContent(allArtists.slice(0, 50)); 
         } catch (err) {
           console.error("Failed to fetch recommended/artist data", err);
         }
@@ -120,7 +122,7 @@ export default function LibraryDesign({
         setPlaylistTitle("All Artists");
         setPlaylistContent([]); 
         setGridTitle("All Artists");
-        setGridContent(allArtists.slice(0, 10));
+        setGridContent(allArtists.slice(0, 50));
       }
 
       setIsLoading(false);
