@@ -3,10 +3,7 @@ import './LibraryDesign.css'; // Keep this for container styles
 import LibraryPlaylist from './LibraryPlaylist'; // Import new component
 import LibraryGridMenu from './LibraryGridMenu'; // Import new component
 import api from '../api'; // Auth backend API
-import mlApi, { normalizeSongData } from '../apiMl'; // ML backend API
-
-// Hardcoded artist list (to match ArtistGrid.js)
-const allArtists = ['Drake', 'Taylor Swift', 'Ariana Grande', 'The Weeknd', 'Billie Eilish', 'Bad Bunny'];
+import mlApi, { normalizeSongData, normalizeArtistData } from '../apiMl'; // ML backend API
 
 export default function LibraryDesign({ 
   token, 
@@ -25,10 +22,32 @@ export default function LibraryDesign({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Main data fetching logic (this stays here, as this is the "container")
+  // New state to hold our dynamic artist list
+  const [allArtists, setAllArtists] = useState([]);
+
+  // Fetch all artists once when the component loads
+  useEffect(() => {
+    const fetchAllArtists = async () => {
+      // Fetch a list of 20 artists to use in the grid menus
+      const artistList = await normalizeArtistData(20);
+      setAllArtists(artistList);
+    };
+    fetchAllArtists();
+  }, []);
+
+  // Main data fetching logic
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+
+      // Utility function to get 10 random artists, excluding a specific one
+      const getOtherArtists = (excludeName = null) => {
+        const otherArtists = allArtists.filter(
+          a => a.name.toLowerCase() !== excludeName?.toLowerCase()
+        );
+        // Simple shuffle and take 10
+        return otherArtists.sort(() => 0.5 - Math.random()).slice(0, 10);
+      };
 
       if (libraryView.type === 'liked') {
         setPlaylistTitle("Liked Songs");
@@ -65,7 +84,6 @@ export default function LibraryDesign({
         setGridTitle("Other Genres");
 
         try {
-          // Point 3 & 5: Fetch ALL songs for this genre
           const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=50`);
           setPlaylistContent(songsResponse.data.map(normalizeSongData));
 
@@ -77,50 +95,59 @@ export default function LibraryDesign({
         }
 
       } else if (libraryView.type === 'artist') {
-        setPlaylistTitle(libraryView.value);
+        const artistName = libraryView.value;
+        setPlaylistTitle(artistName);
         setGridTitle("Other Artists");
 
         try {
-          // Point 3 & 4: Fetch ALL songs for this artist by search
-          const songsResponse = await mlApi.get(`/search?query=${libraryView.value}&limit=50`);
-          setPlaylistContent(songsResponse.data.map(normalizeSongData));
+          // Fetch all songs for this artist by search
+          const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=50`);
+          // Filter songs to match the artist name exactly
+          const artistSongs = songsResponse.data
+            .map(normalizeSongData)
+            .filter(song => song.artist.toLowerCase() === artistName.toLowerCase());
 
-          const otherArtists = allArtists.filter(a => a.toLowerCase() !== libraryView.value.toLowerCase());
-          const artistPromises = otherArtists.map(name => mlApi.get(`/search?query=${name}&limit=1`));
-          const results = await Promise.all(artistPromises);
-          const artistData = results.map((res, index) => ({
-            type: 'artist',
-            name: otherArtists[index],
-            image: res.data[0]?.img || "default-image-url.png" 
-          }));
-          setGridContent(artistData);
+          setPlaylistContent(artistSongs);
+
+          // Set grid content to 10 other artists
+          setGridContent(getOtherArtists(artistName));
+
         } catch (err) {
           console.error("Failed to fetch artist data", err);
         }
       
-      // New 'recommended' view
       } else if (libraryView.type === 'recommended') {
         setPlaylistTitle("Recommended Songs");
         setGridTitle("All Artists"); // As requested
 
         try {
-          // Fetch all popular songs
           const songsResponse = await mlApi.get('/popular?limit=50');
           setPlaylistContent(songsResponse.data.map(normalizeSongData));
 
-          // Fetch artist names for grid
-          // Using hardcoded list as API doesn't have a /artists endpoint
-          setGridContent(allArtists.map(a => ({ type: 'artist_name_only', name: a })));
+          // Use the dynamic artist list
+          setGridContent(allArtists.slice(0, 10)); // Show first 10
           
         } catch (err) {
           console.error("Failed to fetch recommended/artist data", err);
         }
+      
+      // New view for "See All" artists
+      } else if (libraryView.type === 'artists_all') {
+        setPlaylistTitle("All Artists");
+        setPlaylistContent([]); // No songs selected yet
+        setGridTitle("All Artists");
+        // Show the first 10 artists from our fetched list
+        setGridContent(allArtists.slice(0, 10));
       }
+
       setIsLoading(false);
     };
 
-    fetchData();
-  }, [libraryView, token]); // Rerun when view or token changes
+    // Only run fetch logic if we have artists to display (for artist-related views)
+    if (allArtists.length > 0 || (libraryView.type !== 'artist' && libraryView.type !== 'artists_all' && libraryView.type !== 'recommended')) {
+      fetchData();
+    }
+  }, [libraryView, token, allArtists]); // Rerun when view, token, or artist list changes
 
   // Song click handler
   const handleSongClick = (song) => {
@@ -134,7 +161,15 @@ export default function LibraryDesign({
     setCurrentSong(song);
     // Add to recent
     if (token) {
-      api.post('/api/recent/add', { songId: song.id, ...song }).catch(err => console.warn("Failed to add to recent", err));
+      api.post('/api/recent/add', { 
+          songId: song.id, // The ID to find/create by
+          track_id: song.id,
+          track_name: song.name,
+          artists: song.artist,
+          album_name: song.album_name,
+          img: song.image,
+          src: song.src
+        }).catch(err => console.warn("Failed to add to recent", err));
     }
   };
 
@@ -145,12 +180,11 @@ export default function LibraryDesign({
     } else if (item.type === 'genre') {
       setLibraryView({ type: 'genre', value: item.name });
     } else if (item.type === 'artist' || item.type === 'artist_name_only') {
+      // This click now triggers the "reshuffle" by updating the view
       setLibraryView({ type: 'artist', value: item.name });
     }
   };
   
-  // All the rendering logic is removed from here
-  // and replaced with the new components.
   return (
     <div className='page-container'>
       <div className='page-head'>
@@ -158,7 +192,6 @@ export default function LibraryDesign({
       </div>
 
       <div className='playlist-grid'>
-        {/* Use the new Playlist component */}
         <LibraryPlaylist
           title={playlistTitle}
           songs={playlistContent}
@@ -166,9 +199,12 @@ export default function LibraryDesign({
           handleSongClick={handleSongClick}
           likedSongsMap={likedSongsMap}
           handleLikeToggle={handleLikeToggle}
+          // Pass a message if no artist is selected
+          customEmptyMessage={
+            libraryView.type === 'artists_all' ? 'Select an artist to see their songs.' : 'No songs found.'
+          }
         />
         
-        {/* Use the new GridMenu component */}
         <LibraryGridMenu
           title={gridTitle}
           items={gridContent}

@@ -14,8 +14,8 @@ export default function MainPageBody({
   libraryView, 
   setLibraryView, 
   setCurrentPage,
-  likedSongsMap, // Point 1
-  handleLikeToggle // Point 1
+  likedSongsMap,
+  handleLikeToggle
 }) {
   
   const pageBodyClass = currentPage === "library" ? "page-body-library" : "page-body-home";
@@ -29,12 +29,17 @@ export default function MainPageBody({
           token={token}
           libraryView={libraryView} 
           setLibraryView={setLibraryView} 
-          likedSongsMap={likedSongsMap} // Point 1: Pass down
-          handleLikeToggle={handleLikeToggle} // Point 1: Pass down
+          likedSongsMap={likedSongsMap}
+          handleLikeToggle={handleLikeToggle}
         />
       ) : (
         <>
-          <BannerSection />
+          {/* Props are now passed to BannerSection */}
+          <BannerSection 
+            setIsAudioBarVisible={setIsAudioBarVisible}
+            setCurrentSong={setCurrentSong}
+            token={token}
+          />
           <RecentlyPlayed 
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
@@ -48,9 +53,6 @@ export default function MainPageBody({
             setCurrentPage={setCurrentPage} // For "See All"
           />
           <Artists 
-            setIsAudioBarVisible={setIsAudioBarVisible} 
-            setCurrentSong={setCurrentSong}
-            token={token}
             setLibraryView={setLibraryView} 
             setCurrentPage={setCurrentPage} 
           />

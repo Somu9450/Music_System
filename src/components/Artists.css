@@ -1,6 +1,128 @@
-/* All styles from this file have been removed.
-  The styles for the artist grid in the library are 
-  correctly located in LibraryGridMenu.css.
-  The component Artists.js only uses SongGrid.css.
-  This file is imported but its content was not used.
-*/
+.artists {
+  margin-top: 20px;
+}
+
+/* Styles copied from Genre.css for header/layout */
+.grid-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 1px;
+  margin-right: 2%;
+  margin-top: 2%;
+}
+
+.grid-name {
+  color: white;
+  font-size: 1rem;
+  margin-left: 25px;
+}
+
+/* Copied from SongGrid.css */
+.see-all {
+  color: #a259ff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-right: 10px; /* Added margin */
+}
+
+.see-all:hover {
+  color: #af7df2;
+  text-decoration: underline;
+}
+
+.grid-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.arrow-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.arrow-icon:active {
+  transform: scale(1.2);
+}
+
+/* New container for scrolling artists */
+.artist-grid-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 10px 20px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  flex-grow: 1;
+}
+
+.artist-grid-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* New tile styles for the artist */
+.artist-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  text-align: center;
+  height: 180px; 
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+  min-width: 140px;
+}
+
+.artist-tile:hover {
+  background-color: #2a2a3d;
+}
+
+.artist-tile img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%; /* Makes image round */
+  margin-bottom: 10px;
+}
+
+.artist-tile span {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .grid-name {
+    margin-left: 10px;
+  }
+  .artist-grid-container {
+    gap: 10px;
+    padding: 10px;
+  }
+  .artist-tile {
+    min-width: 120px;
+    height: 160px;
+  }
+  .artist-tile img {
+    width: 100px;
+    height: 100px;
+  }
+  .arrow-icon {
+    display: none; /* Hide arrows on mobile */
+  }
+}

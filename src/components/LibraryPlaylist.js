@@ -12,7 +12,8 @@ const LibraryPlaylist = ({
   isLoading, 
   handleSongClick, 
   likedSongsMap, 
-  handleLikeToggle 
+  handleLikeToggle,
+  customEmptyMessage // New prop
 }) => {
 
   if (isLoading) {
@@ -43,7 +44,9 @@ const LibraryPlaylist = ({
             </div>
           </div>
         )) : (
-          <p style={{padding: '20px', color: '#aaa'}}>No songs found.</p>
+          <p style={{padding: '20px', color: '#aaa'}}>
+            {customEmptyMessage || 'No songs found.'}
+          </p>
         )}
       </div>
     </div>

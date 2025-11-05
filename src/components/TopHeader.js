@@ -8,10 +8,11 @@ import { debounce } from 'lodash';
 
 export default function TopHeader({ 
   isLoggedIn, 
+  username, // New prop
   onLogout, 
   setCurrentSong, 
   setIsAudioBarVisible,
-  token // Point 1: Added token
+  token
 }) {
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -43,7 +44,6 @@ export default function TopHeader({
   }, [search, fetchSearch]);
 
   const handleSongClick = (song) => {
-    // Point 1 & 2: Check for login
     if (!token) {
       alert("Please login to play music.");
       return;
@@ -93,7 +93,11 @@ export default function TopHeader({
 
       <div className="header-right">
         {isLoggedIn ? (
-          <ProfileMenu isLoggedIn={isLoggedIn} onLogout={onLogout} />
+          <>
+            {/* New username display */}
+            <span className="header-username">Welcome, {username}</span>
+            <ProfileMenu isLoggedIn={isLoggedIn} onLogout={onLogout} />
+          </>
         ) : (
           <>
             <button className="header-btn" onClick={() => navigate('/login')}>Login</button>

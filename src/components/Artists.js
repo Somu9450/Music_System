@@ -1,39 +1,84 @@
-import React, { useState, useEffect } from 'react'
-import SongGrid from './SongGrid'
-import './Artists.css'
-import mlApi, { normalizeSongData } from '../apiMl'; // Import ML API
+import React, { useState, useEffect, useRef } from 'react';
+import './Artists.css'; // Import the updated CSS
+import './Genre.css'; // Borrowing styles for grid layout and arrows
+import mlApi, { normalizeArtistData } from '../apiMl'; // Import ML API and new normalizer
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-export default function Artists({ setIsAudioBarVisible, setCurrentSong, token }) {
-  const [songs, setSongs] = useState([]);
-  
+export default function Artists({ setLibraryView, setCurrentPage }) {
+  const [artistData, setArtistData] = useState([]);
+  const scrollRef = useRef(null);
+
   useEffect(() => {
-    const fetchSongs = async () => {
+    const fetchArtists = async () => {
       try {
-        // Using 'hip-hop' to get different songs
-        const response = await mlApi.get('/songs_by_genre', {
-          params: { genre: 'hip-hop', limit: 10 } 
-        });
-        const normalized = response.data.map(normalizeSongData);
-        setSongs(normalized);
+        // Fetch 15 artists dynamically
+        const data = await normalizeArtistData(15);
+        setArtistData(data);
       } catch (err) {
-        console.error("Failed to fetch hip-hop songs", err);
+        console.error("Failed to fetch artists", err);
       }
     };
-    fetchSongs();
+    fetchArtists();
   }, []);
+
+  const handleArtistClick = (artistName) => {
+    setLibraryView({ type: 'artist', value: artistName });
+    setCurrentPage('library');
+  };
+
+  const handleSeeAllClick = () => {
+    // New view type to show all artists in the library
+    setLibraryView({ type: 'artists_all' });
+    setCurrentPage('library');
+  };
+
+  // Scroll functions
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className='artists'>
-        <div>
-            <SongGrid 
-              prop="Artists" 
-              setIsAudioBarVisible={setIsAudioBarVisible} 
-              showSeeAll={false}
-              setCurrentSong={setCurrentSong} 
-              token={token}
-              songs={songs} // Pass fetched songs
-            />
+      <div className="grid-header">
+        <div className='grid-name'><span>Artists</span></div>
+        <div className="see-all" onClick={handleSeeAllClick}>See All</div>
+      </div>
+
+      <div className="grid-flex">
+        <div className="arrow-icon" onClick={scrollLeft}>
+          <ArrowBackIosIcon fontSize="large" color='primary' />
         </div>
+        
+        <div className="artist-grid-container" ref={scrollRef}>
+          {artistData.length > 0 ? (
+            artistData.map((artist) => (
+              <div 
+                className="artist-tile" 
+                key={artist.name} 
+                onClick={() => handleArtistClick(artist.name)}
+              >
+                <img src={artist.image} alt={artist.name} />
+                <span>{artist.name}</span>
+              </div>
+            ))
+          ) : (
+            <p style={{ color: '#aaa', marginLeft: '20px' }}>Loading artists...</p>
+          )}
+        </div>
+        
+        <div className="arrow-icon" onClick={scrollRight}>
+          <ArrowForwardIosIcon fontSize="large" color='primary' />
+        </div>
+      </div>
     </div>
-  )
+  );
 }

@@ -108,41 +108,44 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLiked = async () => {
-      if (token) {
-        try {
-          const response = await api.get('/api/liked/');
-          const songsFromDb = response.data.songs || [];
-          const likeMap = songsFromDb.reduce((acc, song) => {
-            acc[song.track_id || song._id] = true; 
-            return acc;
-          }, {});
-          setLikedSongsMap(likeMap);
-        } catch (err) {
-          console.error("Failed to fetch liked songs status", err);
-        }
-      } else {
-        setLikedSongsMap({}); 
+  const fetchLiked = async () => {
+    if (token) {
+      try {
+        const response = await api.get('/api/liked/');
+        const songsFromDb = Array.isArray(response.data) ? response.data : [];
+        const likeMap = songsFromDb.reduce((acc, song) => {
+          acc[song.track_id] = true;
+          return acc;
+        }, {});
+        setLikedSongsMap(likeMap);
+      } catch (err) {
+        console.error("Failed to fetch liked songs status", err);
       }
-    };
-    fetchLiked();
-  }, [token]);
+    } else {
+      setLikedSongsMap({});
+    }
+  };
+  fetchLiked();
+}, [token]);
+
 
   // Global function to handle liking/unliking a song
   const handleLikeToggle = async (song, e) => {
-    if (e) e.stopPropagation(); 
-    
-    if (!token) {
-      alert("Please log in to like songs");
-      return;
-    }
-    if (!song || !song.id) {
-      console.error("Cannot like a song with no ID", song);
-      return;
-    }
+  if (e) e.stopPropagation();
 
-    const trackId = song.id; 
-    const isLiked = !!likedSongsMap[trackId];
+  if (!token) {
+    alert("Please log in to like songs");
+    return;
+  }
+
+  if (!song || !song.id) {
+    console.error("Cannot like a song with no ID", song);
+    return;
+  }
+
+  const trackId = song.id;
+  const isLiked = !!likedSongsMap[trackId];
+
 
     try {
       if (isLiked) {
@@ -150,33 +153,33 @@ function App() {
         const likedResponse = await api.get('/api/liked/');
         const songToUnlike = likedResponse.data.songs.find(s => (s.track_id || s._id) === trackId);
         if (songToUnlike) {
-          await api.delete(`/api/liked/${songToUnlike._id}`);
+          await api.delete(`/api/liked/${songToUnlike.track_id}`);
         }
       } else {
         // --- LIKE (FIXED) ---
         // We now send the keys the backend model expects
         await api.post('/api/liked/add', { 
-          songId: trackId, // The ID to find/create by
-          track_id: trackId,
-          track_name: song.name,
-          artists: song.artist,
-          album_name: song.album_name,
-          img: song.image,
-          src: song.src
-        });
-      }
+            songId: trackId,           // ✅ backend expects this
+            title: song.name,          // ✅ backend expects title
+            artist: song.artist, 
+            album: song.album || '',   // optional
+            coverImage: song.image,    // ✅ match backend’s coverImage
+            preview: song.src          // optional but consistent with model
+            });
+          }
       
-      setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
+      // Update local state
+    setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
 
-      if (libraryView.type === 'liked') {
-        setLibraryView({ type: 'liked', refresh: Date.now() }); 
-      }
-
-    } catch (err) {
-      console.error("Like error:", err);
-      alert("Failed to update liked songs.");
+    if (libraryView.type === 'liked') {
+      setLibraryView({ type: 'liked', refresh: Date.now() });
     }
-  };
+  } catch (err) {
+    console.error("Like error:", err);
+    alert("Failed to update liked songs.");
+  }
+};
+
 
   useEffect(() => {
     if (token) {
