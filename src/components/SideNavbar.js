@@ -1,7 +1,7 @@
 import React from 'react';
 import './SideNavbar.css';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
-import PodcastsIcon from '@mui/icons-material/Podcasts';
+import CategoryIcon from '@mui/icons-material/Category';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
 
 export default function SideNavbar({ setCurrentPage, setLibraryView }) {
@@ -38,10 +38,10 @@ export default function SideNavbar({ setCurrentPage, setLibraryView }) {
         </li>
         <li onClick={handleLibraryClick}>
           <LibraryMusicIcon />
-          <span>My Library</span> {/* Point 4 */}
+          <span>Library</span> {/* Point 4 */}
         </li>
         <li onClick={handlePlaylistClick}>
-          <PodcastsIcon />
+          <CategoryIcon />
           <span>Playlist</span> {/* Point 4 */}
         </li>
       </ul>

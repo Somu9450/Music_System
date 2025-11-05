@@ -7,15 +7,25 @@
   padding: 1.5% 2.5%;
   position: fixed;
   top: 0;
-  left: 5%;
-  width: 95%; 
+  left: 0%;
+  width: 100%; 
   height: 70px; 
   box-sizing: border-box; 
   z-index: 1000;
 }
 
-.header-left {
+
+.header-left img{
   flex: 1;
+  max-width: 200px;
+  border-radius: 12px;
+  width: 100%;
+  object-fit: contain;
+  margin:0%;
+  border: none;
+  border-radius: 40px;
+  padding-top: 3px;
+  padding-left: 0px ;
 }
 
 .header-left h2 {
@@ -98,8 +108,14 @@
 .header-right {
   flex: 1;
   display: flex;
-  justify-content: flex-end; /* Align right on desktop */
+  justify-content: flex-end;
+  align-items: center;
   gap: 12px;
+}
+
+.header-username{
+  font-size: 25px;
+  font-weight: 700;
 }
 
 .header-btn {

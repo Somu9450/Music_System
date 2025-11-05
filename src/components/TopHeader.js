@@ -5,6 +5,7 @@ import ProfileMenu from "./ProfileMenu";
 import React, { useState, useEffect, useCallback } from 'react';
 import mlApi, { normalizeSongData } from '../apiMl'; 
 import { debounce } from 'lodash'; 
+import audientlogo from './assets/audientlogo.png'
 
 export default function TopHeader({ 
   isLoggedIn, 
@@ -59,7 +60,7 @@ export default function TopHeader({
   return (
     <div className="top-header">
       <div className="header-left">
-        <h2>Audient</h2>
+        <img src={audientlogo} alt='app-logo-image'/>
       </div>
 
       <div className="header-center">
@@ -94,8 +95,7 @@ export default function TopHeader({
       <div className="header-right">
         {isLoggedIn ? (
           <>
-            {/* New username display */}
-            <span className="header-username">Welcome, {username}</span>
+            <span className="header-username">Welcome {username}</span>
             <ProfileMenu isLoggedIn={isLoggedIn} onLogout={onLogout} />
           </>
         ) : (
