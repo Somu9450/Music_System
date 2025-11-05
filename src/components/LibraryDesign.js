@@ -170,9 +170,9 @@ export default function LibraryDesign({
   
   return (
     <div className='page-container'>
-      <div className='page-head'>
+      {/* <div className='page-head'>
         <h1>My Library</h1>
-      </div>
+      </div> */}
 
       <div className='playlist-grid'>
         <LibraryPlaylist

@@ -3,6 +3,7 @@ import './SideNavbar.css';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import CategoryIcon from '@mui/icons-material/Category';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
+import RecommendIcon from '@mui/icons-material/Recommend';
 
 export default function SideNavbar({ setCurrentPage, setLibraryView }) {
 
@@ -18,7 +19,6 @@ export default function SideNavbar({ setCurrentPage, setLibraryView }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Point 4: Relabeled "Podcast" to "Playlist"
   const handlePlaylistClick = () => {
     setCurrentPage("home"); // Ensure we are on the home page
     setTimeout(() => {
@@ -43,6 +43,10 @@ export default function SideNavbar({ setCurrentPage, setLibraryView }) {
         <li onClick={handlePlaylistClick}>
           <CategoryIcon />
           <span>Playlist</span> {/* Point 4 */}
+        </li>
+        <li onClick={handlePlaylistClick}>
+          <RecommendIcon />
+          <span>Recommended</span> {/* Point 4 */}
         </li>
       </ul>
     </div>

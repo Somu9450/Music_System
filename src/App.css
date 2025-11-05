@@ -97,7 +97,7 @@
 .player-wrapper {
   flex: 10; 
   display: flex;
-  justify-content: center;
+  justify-content:flex-end;
 }
 
 .player-wrapper .audio-player-container {
@@ -110,9 +110,9 @@
 }
 
 .audio-controls-right {
-  flex: 2; 
+  flex: 1; 
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
 }
 

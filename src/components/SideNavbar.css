@@ -4,7 +4,8 @@
   left: 0;
   width: 5%;
   height: calc(100vh - 70px); /* Fill remaining height */
-  background: linear-gradient(to bottom, #212048, #1f2141, #24224f);
+  /* background: linear-gradient(to bottom, #212048, #1f2141, #24224f); */
+  background-color: #121212;
   color: white;
   display: flex;
   justify-content: center;
