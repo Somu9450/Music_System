@@ -4,14 +4,16 @@
   gap:8%;
   align-items: center;
   background: linear-gradient(to right, #12121a,#1e1e2f);
-  padding: 1%;
+  padding: 0% 1%;
   border-radius: 12px;
   color: white;
-  min-height: 200px;
+  min-height: 150px;
+  justify-content: center;
+  align-items: center;
 }
 
 .banner-text h1 {
-  font-size: 3rem;
+  font-size: 2rem;
   margin-bottom: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -20,7 +22,7 @@
 }
 
 .banner-text p {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin-bottom: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -28,21 +30,21 @@
 }
 
 .listen-btn {
-  font-size: 1.5rem;
+  font-size: 0.8rem;
   width: 100%;
   background-color: #6c63ff;
   color: white;
-  padding: 12px 24px;
+  padding: 8px 16px;
   border-radius: 20px;
   border: none;
   cursor: pointer;
 }
 
 .banner-img {
-  max-width: 500px;
+  max-width: 220px;
   border-radius: 12px;
-  width: 200px;
-  height: 200px;
+  width: 50%;
+  height: 50%;
   object-fit: cover;
   margin-left: 40px;
 }
@@ -55,6 +57,7 @@
     padding: 20px;
     max-height: 20px;
     justify-content: center;
+    overflow-y:auto;
   }
 
 
