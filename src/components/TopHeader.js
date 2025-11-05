@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
 import ProfileMenu from "./ProfileMenu";
 import React, { useState, useEffect, useCallback } from 'react';
-import mlApi, { normalizeSongData } from '../apiMl'; 
+import mlApi, { getSongData } from '../apiMl'; 
 import { debounce } from 'lodash'; 
 import audientlogo from './assets/audientlogo.png'
 
@@ -27,7 +27,7 @@ export default function TopHeader({
           const response = await mlApi.get('/search', {
             params: { query: query }
           });
-          const normalizedResults = response.data.map(normalizeSongData);
+          const normalizedResults = response.data.map(getSongData);
           setSearchResults(normalizedResults);
         } catch (error) {
           console.error("Search error:", error);

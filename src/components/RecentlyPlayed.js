@@ -18,19 +18,18 @@ export default function RecentlyPlayed({ setIsAudioBarVisible, setCurrentSong, t
         const response = await api.get('/api/recent/');
         
         // Check if response.data.songs exists, otherwise assume response.data is the array
-        const songsFromDb = Array.isArray(response.data.songs) ? response.data.songs : 
-                            Array.isArray(response.data) ? response.data : [];
+        const songsFromDb = Array.isArray(response.data) ? response.data : [];
 
         // --- THIS NORMALIZATION IS NOW FIXED ---
         const normalized = songsFromDb.map(song => ({
           // Use the keys from the backend 'RecentlyPlayed' model
           id: song.track_id || song._id, 
           _id: song._id,
-          name: song.track_name,   // ✅ Was 'name'
-          artist: song.artists,    // ✅ Was 'artist'
-          image: song.img,         // ✅ Was 'image'
-          src: song.src
-        })); // .reverse() was removed here
+          name: song.track_name,
+          artist: song.artists,
+          image: song.img,
+          src: song.src || song.preview
+        }));
 
         setRecentSongs(normalized || []);
       } catch (err) {

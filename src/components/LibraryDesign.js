@@ -3,7 +3,7 @@ import './LibraryDesign.css';
 import LibraryPlaylist from './LibraryPlaylist'; 
 import LibraryGridMenu from './LibraryGridMenu'; 
 import api from '../api'; 
-import mlApi, { normalizeSongData, normalizeArtistData } from '../apiMl'; // Import updated normalizer
+import mlApi, { getSongData, getArtistData } from '../apiMl'; // Import updated normalizer
 
 export default function LibraryDesign({ 
   token, 
@@ -25,7 +25,7 @@ export default function LibraryDesign({
 
   useEffect(() => {
     const fetchAllArtists = async () => {
-      const artistList = await normalizeArtistData(20);
+      const artistList = await getArtistData(20);
       setAllArtists(artistList);
     };
     fetchAllArtists();
@@ -57,14 +57,14 @@ export default function LibraryDesign({
           const response = await api.get('/api/liked/');
           
           // Use response.data, not response.data.songs
-          // Also, use the master normalizeSongData function
-          const likedSongs = (response.data || []).map(normalizeSongData);
+          // Also, use the master getSongData function
+          const likedSongs = (response.data || []).map(getSongData);
           
           setPlaylistContent(likedSongs);
 
           if (likedSongs.length > 0) {
             const recResponse = await mlApi.get(`/recommend/${likedSongs[0].id}?limit=10`);
-            const recs = recResponse.data.similar_songs.map(normalizeSongData);
+            const recs = recResponse.data.similar_songs.map(getSongData);
             setGridContent(recs.map(song => ({ type: 'song', data: song })));
           } else {
             setGridContent([]);
@@ -79,7 +79,7 @@ export default function LibraryDesign({
         setGridTitle("Other Genres");
         try {
           const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=50`);
-          setPlaylistContent(songsResponse.data.map(normalizeSongData));
+          setPlaylistContent(songsResponse.data.map(getSongData));
           const genresResponse = await mlApi.get('/genres');
           const otherGenres = genresResponse.data.filter(g => g.toLowerCase() !== libraryView.value.toLowerCase());
           setGridContent(otherGenres.map(g => ({ type: 'genre', name: g })));
@@ -95,7 +95,7 @@ export default function LibraryDesign({
         try {
           const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=50`);
           const artistSongs = songsResponse.data
-            .map(normalizeSongData)
+            .map(getSongData)
             .filter(song => song.artist.toLowerCase() === artistName.toLowerCase());
           setPlaylistContent(artistSongs);
           setGridContent(getOtherArtists(artistName));
@@ -109,7 +109,7 @@ export default function LibraryDesign({
         setGridTitle("All Artists"); 
         try {
           const songsResponse = await mlApi.get('/popular?limit=50');
-          setPlaylistContent(songsResponse.data.map(normalizeSongData));
+          setPlaylistContent(songsResponse.data.map(getSongData));
           setGridContent(allArtists.slice(0, 10)); 
         } catch (err) {
           console.error("Failed to fetch recommended/artist data", err);

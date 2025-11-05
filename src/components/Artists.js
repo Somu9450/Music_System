@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Artists.css'; // Import the updated CSS
 import './Genre.css'; // Borrowing styles for grid layout and arrows
-import mlApi, { normalizeArtistData } from '../apiMl'; // Import ML API and new normalizer
+import mlApi, { getArtistData } from '../apiMl'; // Import ML API and new normalizer
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
@@ -13,7 +13,7 @@ export default function Artists({ setLibraryView, setCurrentPage }) {
     const fetchArtists = async () => {
       try {
         // Fetch 15 artists dynamically
-        const data = await normalizeArtistData(15);
+        const data = await getArtistData(15);
         setArtistData(data);
       } catch (err) {
         console.error("Failed to fetch artists", err);

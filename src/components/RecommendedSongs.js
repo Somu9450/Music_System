@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import SongGrid from './SongGrid'
 import './RecommendedSongs.css'
-import mlApi, { normalizeSongData } from '../apiMl'; 
+import mlApi, { getSongData } from '../apiMl'; 
 
 export default function RecommendedSongs({ 
   setIsAudioBarVisible, 
@@ -16,7 +16,7 @@ export default function RecommendedSongs({
     const fetchPopular = async () => {
       try {
         const response = await mlApi.get('/popular?limit=10');
-        const normalized = response.data.map(normalizeSongData);
+        const normalized = response.data.map(getSongData);
         setSongs(normalized);
       } catch (err) {
         console.error("Failed to fetch popular songs", err);

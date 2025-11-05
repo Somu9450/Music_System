@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './BannerSection.css';
 // API imports
-import mlApi, { normalizeSongData } from '../apiMl';
+import mlApi, { getSongData } from '../apiMl';
 import api from '../api'; // For adding to recently played
 
 // Default fallback image in case API fails
@@ -16,7 +16,7 @@ export default function BannerSection({ setCurrentSong, setIsAudioBarVisible, to
         // Fetch 1 popular song to display in the banner
         const response = await mlApi.get('/popular', { params: { limit: 1 } });
         if (response.data && response.data.length > 0) {
-          const normalizedSong = normalizeSongData(response.data[0]);
+          const normalizedSong = getSongData(response.data[0]);
           setBannerSong(normalizedSong);
         }
       } catch (err) {

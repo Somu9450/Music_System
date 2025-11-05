@@ -36,7 +36,7 @@ function SignUp({ onSignUpSuccess }) {
           password: input.password,
         });
         
-        alert(`OTP sent to ${input.email}! Please check your inbox.`);
+        alert(`OTP sent to ${input.email}! Please check your inbox OR spam Folder.`);
         setShowOtpInput(true);
         
       } catch (error) {
