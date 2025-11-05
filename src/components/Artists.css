@@ -12,23 +12,23 @@
   margin-top: 2%;
 }
 
-.grid-name {
+.grid-name span {
   color: white;
-  font-size: 1rem;
+  font-size: 2rem;
   margin-left: 25px;
 }
 
-/* Copied from SongGrid.css */
+
 .see-all {
   color: #a259ff;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1rem;
   cursor: pointer;
-  margin-right: 10px; /* Added margin */
+  margin-right: 10px;
 }
 
 .see-all:hover {
-  color: #af7df2;
+  color: #d1b6f5;
   text-decoration: underline;
 }
 

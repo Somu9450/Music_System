@@ -10,7 +10,7 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  margin-left: 5%; 
+  margin-left: 8%; 
   margin-top: 70px;  
 }
 
@@ -30,7 +30,7 @@
 
 
 .page-body-home {
-  background-image: url('./components/assets/background-image.png');
+  /* background-image: url('./components/assets/background-image.png'); */
   background-size: 100% auto; 
   background-repeat: repeat-y;
   background-attachment: scroll; 
@@ -101,7 +101,7 @@
 }
 
 .player-wrapper .audio-player-container {
-  width: 100%;
+  width: 95%;
   max-width: 900px; 
 }
 
@@ -126,11 +126,11 @@
   color: white;
 }
 
-/* --- RESPONSIVE STYLES --- */
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0; 
-    margin-top: 140px; 
+    margin-top: 85px; 
+    margin-bottom: 8%;
     padding-bottom: 120px; 
   }
   
@@ -163,10 +163,10 @@
   }
 
   .player-wrapper {
-    flex: 2; 
+    flex: 2.5; 
   }
 
   .audio-controls-right {
-    flex: 1; 
+    flex: 0.2; 
   }
 }

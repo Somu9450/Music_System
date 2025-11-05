@@ -2,13 +2,13 @@
   position: fixed;
   top: 70px; 
   left: 0;
-  width: 5%;
+  width: 8%;
   height: calc(100vh - 70px);
   /* background: linear-gradient(to bottom, #212048, #1f2141, #24224f); */
   background-color: #121212;
   color: white;
   display: flex;
-  justify-content: center;
+  justify-content:center;
   align-items: center;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
   z-index: 999;
@@ -62,6 +62,10 @@
     width: 100%;
     justify-content: space-around;
     gap: 0;
+  }
+
+  .sidebar-menu span {
+    display: none;
   }
 
   .sidebar-menu li {

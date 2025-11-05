@@ -145,23 +145,22 @@
     left: 0;
     width: 100%;
     height: auto; /* Allow header to grow */
-    flex-wrap: wrap; /* Allow items to wrap */
+    flex-wrap:inherit;
     gap: 15px;
     padding: 15px;
   }
 
   .header-left {
-    flex-basis: 100%; /* Full width */
+    flex-basis: 80%;
     text-align: center;
   }
   
   .header-left h2 {
-    font-size: 2rem;
+    font-size: 1rem;
   }
 
   .header-center {
     flex-basis: 100%; /* Full width */
-    order: 3; /* Move search bar to the bottom */
   }
 
   .search-wrapper {
@@ -169,8 +168,7 @@
   }
 
   .header-right {
-    flex-basis: 100%; /* Full width */
-    order: 2; /* Move buttons/profile to middle */
-    justify-content: center; /* Center buttons */
+    flex-basis: 80%;
+    justify-content: center; 
   }
 }
