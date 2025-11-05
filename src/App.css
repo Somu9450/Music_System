@@ -20,6 +20,7 @@
   overflow-y: auto; 
   overflow-x: hidden; 
   box-sizing: border-box; 
+  scrollbar-width: none;
 }
 
 /* This is the new rule */
