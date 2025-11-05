@@ -1,21 +1,20 @@
-import React, { useRef } from 'react'; // Make sure to import useRef
+import React, { useRef } from 'react';
 import './Genre.css';
 import mlApi from '../apiMl'; 
 import { useEffect, useState } from 'react';
 import AlbumIcon from '@mui/icons-material/Album';
-// Import icons for arrows
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 export default function Genre({ setLibraryView, setCurrentPage }) {
   const [genres, setGenres] = useState([]);
-  const scrollRef = useRef(null); // Add ref for scrolling
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         const response = await mlApi.get('/genres');
-        setGenres(response.data); // Get all genres
+        setGenres(response.data); 
       } catch (err) {
         console.error("Failed to fetch genres", err);
       }
@@ -28,7 +27,6 @@ export default function Genre({ setLibraryView, setCurrentPage }) {
     setCurrentPage('library');
   };
 
-  // Add scroll functions
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
@@ -47,7 +45,6 @@ export default function Genre({ setLibraryView, setCurrentPage }) {
         <div className='grid-name'><span>Genre <AlbumIcon /></span></div>
       </div>
       
-      {/* This is the new structure with arrows */}
       <div className="grid-flex">
         <div className="arrow-icon" onClick={scrollLeft}>
           <ArrowBackIosIcon fontSize="large" color='primary' />

@@ -42,11 +42,9 @@ function jwtDecode(token) {
 }
 
 
-// --- MainAppLayout ---
-// (FIX 1: Pass 'username' prop)
 function MainAppLayout({ 
   token, 
-  username, // <-- CHANGED from 'user' object to 'username' string
+  username, 
   onLogout, 
   isAudioBarVisible, 
   setIsAudioBarVisible, 
@@ -63,7 +61,7 @@ function MainAppLayout({
     <div className="App">
       <TopHeader 
         isLoggedIn={!!token} 
-        username={username} // <-- PASS 'username'
+        username={username} 
         onLogout={onLogout} 
         setCurrentSong={setCurrentSong}
         setIsAudioBarVisible={setIsAudioBarVisible}
@@ -85,6 +83,7 @@ function MainAppLayout({
             setCurrentPage={setCurrentPage}
             likedSongsMap={likedSongsMap} 
             handleLikeToggle={handleLikeToggle} 
+            currentSong={currentSong} 
           />
         </div>
       </div>
@@ -125,7 +124,7 @@ function MainAppLayout({
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [username, setUsername] = useState(null); // <-- (FIX 1) Use 'username' string state
+  const [username, setUsername] = useState(null); 
   const [isAudioBarVisible, setIsAudioBarVisible] = useState(true);
   const [currentSong, setCurrentSong] = useState(defaultSong);
   const [libraryView, setLibraryView] = useState({ type: 'liked' });
@@ -133,67 +132,58 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchLiked = async () => {
+    const fetchLiked = async () => {
+      if (token) {
+        try {
+          const response = await api.get('/api/liked/');
+          const songsFromDb = Array.isArray(response.data) ? response.data : [];
+          const likeMap = songsFromDb.reduce((acc, song) => {
+    
+            
+            acc[song.songId || song.track_id] = true; 
+            return acc;
+          }, {});
+          setLikedSongsMap(likeMap);
+        } catch (err) {
+          console.error("Failed to fetch liked songs status", err);
+        }
+      } else {
+        setLikedSongsMap({});
+      }
+    };
+    fetchLiked();
+
     if (token) {
-      try {
-        const response = await api.get('/api/liked/');
-        // Use response.data directly if it's the array, or response.data.songs
-        const songsFromDb = Array.isArray(response.data.songs) ? response.data.songs : 
-                            Array.isArray(response.data) ? response.data : [];
-        const likeMap = songsFromDb.reduce((acc, song) => {
-          acc[song.track_id] = true;
-          return acc;
-        }, {});
-        setLikedSongsMap(likeMap);
-      } catch (err) {
-        console.error("Failed to fetch liked songs status", err);
+        const decodedUser = jwtDecode(token);
+        if (decodedUser) {
+          setUsername(decodedUser.username); 
+        }
+      } else {
+        setUsername(null);
       }
-    } else {
-      setLikedSongsMap({});
-    }
-  };
-  fetchLiked();
-
-  // (FIX 1: Set username from 'decodedUser.username')
-  if (token) {
-      const decodedUser = jwtDecode(token);
-      if (decodedUser) {
-        // The token payload has 'username', not 'name'
-        setUsername(decodedUser.username); // ✅ FIXED
-      }
-    } else {
-      setUsername(null);
-    }
-}, [token]);
+  }, [token]);
 
 
-  // (FIX 2: 'handleLikeToggle' UNLIKE logic)
   const handleLikeToggle = async (song, e) => {
-  if (e) e.stopPropagation();
+    if (e) e.stopPropagation();
 
-  if (!token) {
-    alert("Please log in to like songs");
-    return;
-  }
+    if (!token) {
+      alert("Please log in to like songs");
+      return;
+    }
 
-  if (!song || !song.id) {
-    console.error("Cannot like a song with no ID", song);
-    return;
-  }
+    if (!song || !song.id) {
+      console.error("Cannot like a song with no ID", song);
+      return;
+    }
 
-  const trackId = song.id;
-  const isLiked = !!likedSongsMap[trackId];
-
+    const trackId = song.id;
+    const isLiked = !!likedSongsMap[trackId];
 
     try {
       if (isLiked) {
-        // --- UNLIKE (FIXED) ---
-        // Just send the DELETE request. No need to GET first.
-        // The backend endpoint is /api/liked/:songId
-        await api.delete(`/api/liked/${trackId}`); // ✅ FIXED
-
+        await api.delete(`/api/liked/${trackId}`);
       } else {
-        // --- LIKE (This was already correct) ---
         await api.post('/api/liked/add', { 
             songId: trackId,           
             title: song.name,          
@@ -201,19 +191,19 @@ function App() {
             album: song.album || song.album_name || '',   
             coverImage: song.image,    
             preview: song.src          
-            });
-          }
+        });
+      }
       
-    setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
+      setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
 
-    if (libraryView.type === 'liked') {
-      setLibraryView({ type: 'liked', refresh: Date.now() });
+      if (libraryView.type === 'liked') {
+        setLibraryView({ type: 'liked', refresh: Date.now() });
+      }
+    } catch (err) {
+      console.error("Like error:", err.response ? err.response.data : err);
+      alert("Failed to update liked songs.");
     }
-  } catch (err) {
-    console.error("Like error:", err.response ? err.response.data : err);
-    alert("Failed to update liked songs.");
-  }
-};
+  };
 
 
   useEffect(() => {
@@ -226,17 +216,16 @@ function App() {
 
   const handleLogin = (newToken) => {
     setToken(newToken);
-    // (FIX 1: Set username from 'decodedUser.username')
     const decodedUser = jwtDecode(newToken);
     if (decodedUser) {
-      setUsername(decodedUser.username); // ✅ FIXED
+      setUsername(decodedUser.username);
     }
     navigate('/'); 
   };
 
   const handleLogout = () => {
     setToken(null); 
-    setUsername(null); // (FIX 1) Clear username
+    setUsername(null);
     navigate('/'); 
   };
 
@@ -249,11 +238,11 @@ function App() {
         element={
           <MainAppLayout
             token={token}
-            username={username} // <-- (FIX 1) Pass 'username'
+            username={username}
             onLogout={handleLogout}
             isAudioBarVisible={isAudioBarVisible}
             setIsAudioBarVisible={setIsAudioBarVisible}
-            currentSong={currentSong}
+            currentSong={currentSong} 
             setCurrentSong={setCurrentSong}
             libraryView={libraryView} 
             setLibraryView={setLibraryView} 

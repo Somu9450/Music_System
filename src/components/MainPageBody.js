@@ -1,7 +1,7 @@
 import React from "react";
 import BannerSection from "./BannerSection";
 import RecentlyPlayed from "./RecentlyPlayed";
-import RecommendedSongs from "./RecommendedSongs";
+import PopularSongs from "./PopularSongs"; 
 import Artists from "./Artists";
 import Genre from "./Genre";
 import LibraryDesign from "./LibraryDesign";
@@ -15,7 +15,8 @@ export default function MainPageBody({
   setLibraryView, 
   setCurrentPage,
   likedSongsMap,
-  handleLikeToggle
+  handleLikeToggle,
+  currentSong 
 }) {
   
   const pageBodyClass = currentPage === "library" ? "page-body-library" : "page-body-home";
@@ -31,10 +32,10 @@ export default function MainPageBody({
           setLibraryView={setLibraryView} 
           likedSongsMap={likedSongsMap}
           handleLikeToggle={handleLikeToggle}
+          currentSong={currentSong} 
         />
       ) : (
         <>
-          {/* Props are now passed to BannerSection */}
           <BannerSection 
             setIsAudioBarVisible={setIsAudioBarVisible}
             setCurrentSong={setCurrentSong}
@@ -45,12 +46,13 @@ export default function MainPageBody({
             setCurrentSong={setCurrentSong}
             token={token}
           />
-          <RecommendedSongs 
+         
+          <PopularSongs
             setIsAudioBarVisible={setIsAudioBarVisible} 
             setCurrentSong={setCurrentSong}
             token={token}
-            setLibraryView={setLibraryView} // For "See All"
-            setCurrentPage={setCurrentPage} // For "See All"
+            setLibraryView={setLibraryView} 
+            setCurrentPage={setCurrentPage} 
           />
           <Artists 
             setLibraryView={setLibraryView} 

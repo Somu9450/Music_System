@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FiLogOut } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // Point 2: Import icon
-import "./ProfileMenu.css"; // Make sure to import the CSS
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'; 
+import "./ProfileMenu.css"; 
 
 const ProfileMenu = ({ isLoggedIn, onLogout }) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -17,7 +17,10 @@ const ProfileMenu = ({ isLoggedIn, onLogout }) => {
 
   return (
     <div className="container">
-      {/* Point 2: Replaced img with icon */}
+      
+      <div className="username-display">
+
+      </div>
       <AccountCircleIcon 
         className="avatar"
         onClick={() => setShowMenu(!showMenu)}

@@ -1,12 +1,10 @@
 import React from 'react';
-import './LibraryGridMenu.css'; // We'll create this new CSS file
+import './LibraryGridMenu.css';
 
-/**
- * A presentational component that renders the grid menu.
- */
+
 const LibraryGridMenu = ({ title, items, isLoading, handleGridClick }) => {
 
-  // This helper function now lives inside the component that uses it
+  
   const renderGridItem = (item) => {
     switch (item.type) {
       case 'song':

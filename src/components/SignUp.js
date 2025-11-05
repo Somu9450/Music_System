@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './SignUp.css';
 import loginImage from './login-image.png';
 import { useNavigate } from 'react-router-dom';
-import api from '../api'; // Import the new api instance
+import api from '../api'; 
 
 function SignUp({ onSignUpSuccess }) {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function SignUp({ onSignUpSuccess }) {
     setIsLoading(true);
 
     if (!showOtpInput) {
-      // Step 1: Sign Up
+     
       if (input.password !== input.confirmPassword) {
         alert("Passwords do not match!");
         setIsLoading(false);
@@ -44,11 +44,11 @@ function SignUp({ onSignUpSuccess }) {
         alert(error.response?.data?.message || "Signup failed. Please try again.");
       }
     } else {
-      // Step 2: Verify OTP
+     
       try {
         const response = await api.post('/api/auth/verify-otp', {
           email: input.email,
-          // This is the one change, as requested by your backend team
+       
           otp: otp.toString(), 
         });
 

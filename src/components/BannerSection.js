@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './BannerSection.css';
-// API imports
 import mlApi, { getSongData } from '../apiMl';
-import api from '../api'; // For adding to recently played
+import api from '../api'; 
 
-// Default fallback image in case API fails
+
 import dashboard from './assets/dashboard.jpg';
 
 export default function BannerSection({ setCurrentSong, setIsAudioBarVisible, token }) {
@@ -13,10 +12,10 @@ export default function BannerSection({ setCurrentSong, setIsAudioBarVisible, to
   useEffect(() => {
     const fetchBannerSong = async () => {
       try {
-        // Fetch 1 popular song to display in the banner
-        const response = await mlApi.get('/popular', { params: { limit: 1 } });
+
+        const response = await mlApi.get('/popular', { params: { limit: 100 } });
         if (response.data && response.data.length > 0) {
-          const normalizedSong = getSongData(response.data[0]);
+          const normalizedSong = getSongData(response.data[Math.ceil(Math.random()*(100-0))]);
           setBannerSong(normalizedSong);
         }
       } catch (err) {
@@ -24,7 +23,7 @@ export default function BannerSection({ setCurrentSong, setIsAudioBarVisible, to
       }
     };
     fetchBannerSong();
-  }, []); // Runs once on component mount
+  }, [setCurrentSong]);
 
   const handleListenNow = () => {
     if (!token) {

@@ -3,10 +3,10 @@
   display: inline-block;
 }
 
-/* Point 2: Updated styles for the icon */
+
 .avatar {
-  font-size: 40px !important; /* Make icon larger */
-  color: #c0c0c0; /* Icon color */
+  font-size: 40px !important; 
+  color: #c0c0c0; 
   cursor: pointer;
   transition: color 0.3s ease;
 }

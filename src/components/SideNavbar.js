@@ -12,15 +12,14 @@ export default function SideNavbar({ setCurrentPage, setLibraryView }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Point 6: Update My Library click
   const handleLibraryClick = () => {
-    setLibraryView({ type: 'liked' }); // Set library to show Liked Songs
+    setLibraryView({ type: 'liked' });
     setCurrentPage("library");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePlaylistClick = () => {
-    setCurrentPage("home"); // Ensure we are on the home page
+    setCurrentPage("home"); 
     setTimeout(() => {
       const genreElement = document.getElementById("genre-section");
       if (genreElement) {
@@ -29,24 +28,32 @@ export default function SideNavbar({ setCurrentPage, setLibraryView }) {
     }, 0);
   };
 
+  
+  const handleRecommendedClick = () => {
+    setLibraryView({ type: 'recommended' });
+    setCurrentPage("library");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="left-sidebar">
       <ul className="sidebar-menu">
         <li onClick={handleHomeClick}>
           <HomeFilledIcon />
-          <span>Home</span> {/* Point 4 */}
+          <span>Home</span>
         </li>
         <li onClick={handleLibraryClick}>
           <LibraryMusicIcon />
-          <span>Library</span> {/* Point 4 */}
+          <span>Library</span>
         </li>
         <li onClick={handlePlaylistClick}>
           <CategoryIcon />
-          <span>Playlist</span> {/* Point 4 */}
+          <span>Playlist</span>
         </li>
-        <li onClick={handlePlaylistClick}>
+        
+        <li onClick={handleRecommendedClick}> 
           <RecommendIcon />
-          <span>Recommended</span> {/* Point 4 */}
+          <span>Recommended</span>
         </li>
       </ul>
     </div>

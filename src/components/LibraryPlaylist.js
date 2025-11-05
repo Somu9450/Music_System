@@ -1,11 +1,9 @@
 import React from 'react';
-import './LibraryPlaylist.css'; // We'll create this new CSS file
+import './LibraryPlaylist.css'; 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
-/**
- * A presentational component that renders a list of songs.
- */
+
 const LibraryPlaylist = ({ 
   title, 
   songs, 
@@ -13,7 +11,7 @@ const LibraryPlaylist = ({
   handleSongClick, 
   likedSongsMap, 
   handleLikeToggle,
-  customEmptyMessage // New prop
+  customEmptyMessage 
 }) => {
 
   if (isLoading) {

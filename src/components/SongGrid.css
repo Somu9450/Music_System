@@ -19,7 +19,7 @@
   font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
-  margin-right: 10px; /* Added margin */
+  margin-right: 10px;
 }
 
 .see-all:hover {
@@ -77,8 +77,8 @@
   font-size: 1rem;
   flex-shrink: 0;
   flex-wrap: wrap;
-  width: 160px; /* Set a fixed width for consistency */
-  min-width: 160px; /* Override min-width */
+  width: 160px;
+  min-width: 160px; 
 }
 
 .song-tile img {
@@ -108,7 +108,7 @@
   text-overflow: ellipsis;
 }
 
-/* --- RESPONSIVE STYLES --- */
+
 @media (max-width: 768px) {
   .grid-name {
     margin-left: 10px;
@@ -120,7 +120,7 @@
   }
 
   .song-tile {
-    width: 130px; /* Make tiles smaller on mobile */
+    width: 130px; 
     min-width: 130px;
   }
 
@@ -129,7 +129,7 @@
   }
 
   .arrow-icon {
-    /* Hide arrows on mobile, scrolling is touch-based */
+    
     display: none; 
   }
 }

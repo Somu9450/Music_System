@@ -147,7 +147,7 @@ html, body {
   margin-top: 1.5rem;
 }
 
-/* --- RESPONSIVE STYLES --- */
+
 @media (max-width: 768px) {
   .signup-page {
     width: 100%;
@@ -157,16 +157,16 @@ html, body {
   }
   
   .signup-left {
-    display: none; /* Hide image on mobile */
+    display: none; 
   }
 
   .signup-right {
     flex: 1;
     width: 100%;
-    max-width: none; /* Remove max-width */
+    max-width: none;
     padding: 2rem;
     box-sizing: border-box;
-    overflow-y: auto; /* Allow form to scroll */
+    overflow-y: auto; 
   }
 
   .signup-form {
@@ -174,7 +174,7 @@ html, body {
   }
 
   .name-fields {
-    flex-direction: column; /* Stack name fields */
+    flex-direction: column; 
     gap: 0.8rem;
   }
 }

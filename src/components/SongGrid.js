@@ -29,18 +29,18 @@ export default function SongGrid({
     }
   };
 
-  // --- THIS FUNCTION IS NOW FIXED ---
+  
   const handleRecentApiCall = async (song) => {
     if (token) {
       try {
-        // Send the keys the backend controller (recentController.js) expects
+
         await api.post('/api/recent/add', { 
-          songId: song.id,           // ✅ Backend expects 'songId'
-          title: song.name,          // ✅ Backend expects 'title'
-          artist: song.artist,       // ✅ Backend expects 'artist'
-          album: song.album_name || '', // ✅ Backend expects 'album'
-          coverImage: song.image,    // ✅ Backend expects 'coverImage'
-          preview: song.src          // ✅ Backend expects 'preview'
+          songId: song.id,    
+          title: song.name,      
+          artist: song.artist,       
+          album: song.album_name || '', 
+          coverImage: song.image,  
+          preview: song.src        
         });
       } catch (err) {
         console.warn(
@@ -61,7 +61,7 @@ export default function SongGrid({
       setIsAudioBarVisible(true);
     }
     setCurrentSong(song);
-    handleRecentApiCall(song); // This will now work
+    handleRecentApiCall(song); 
   };
 
   const handleSeeAll = onSeeAllClick ? onSeeAllClick : () => {

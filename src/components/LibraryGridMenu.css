@@ -1,4 +1,4 @@
-/* Styles for the grid menu component */
+
 .grid-menus{
   flex: 2.5;
   display: flex;
@@ -79,7 +79,7 @@
   margin-top: 2px;
 }
 
-/* Styles for dynamic grid */
+
 .genre-tile-library {
   flex: 1 1 120px;
   min-width: 120px;
@@ -125,8 +125,6 @@
   font-weight: 600;
 }
 
-
-/* Responsive styles */
 @media (max-width: 768px) {
   .grid-menus {
     max-width: 100%;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import SongGrid from './SongGrid'
-import './RecommendedSongs.css'
+import './PopularSongs.css' 
 import mlApi, { getSongData } from '../apiMl'; 
 
-export default function RecommendedSongs({ 
+export default function PopularSongs({ 
   setIsAudioBarVisible, 
   setCurrentSong, 
   token,
@@ -15,6 +15,7 @@ export default function RecommendedSongs({
   useEffect(() => {
     const fetchPopular = async () => {
       try {
+        
         const response = await mlApi.get('/popular?limit=10');
         const normalized = response.data.map(getSongData);
         setSongs(normalized);
@@ -25,22 +26,21 @@ export default function RecommendedSongs({
     fetchPopular();
   }, []); 
 
- 
   const handleSeeAllClick = () => {
-    setLibraryView({ type: 'recommended' });
+    setLibraryView({ type: 'popular' });
     setCurrentPage('library');
   };
 
   return (
-    <div className='recommended-songs'>
+    <div className='popular-songs'>
         <div>
             <SongGrid 
-              prop="Recommended" 
+              prop="Popular"
               setIsAudioBarVisible={setIsAudioBarVisible} 
               setCurrentSong={setCurrentSong}
               token={token}
               songs={songs} 
-              showSeeAll={true} 
+              showSeeAll={true}
               onSeeAllClick={handleSeeAllClick} 
             />
         </div>

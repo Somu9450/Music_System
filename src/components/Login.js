@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import './Login.css';
 import loginImage from './login-image.png';
 import { useNavigate } from 'react-router-dom';
-import api from '../api'; // Import the new api instance
+import api from '../api'; 
 
-function Login({ onLogin }) { // onLogin now expects a token
+function Login({ onLogin }) { 
   const navigate = useNavigate();
   const [input, setInput] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [isLoading, setIsLoading] = useState(false); 
 
   const setValues = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -23,7 +23,7 @@ function Login({ onLogin }) { // onLogin now expects a token
 
     setIsLoading(true);
     try {
-      // Call the login API
+     
       const response = await api.post('/api/auth/login', {
         email: input.email,
         password: input.password,
@@ -31,7 +31,7 @@ function Login({ onLogin }) { // onLogin now expects a token
 
       if (response.data && response.data.token) {
         alert("Login successful!");
-        // Pass the token up to App.js
+  
         onLogin(response.data.token);
       } else {
         alert("Login failed. Please try again.");

@@ -3,7 +3,7 @@ import './LibraryDesign.css';
 import LibraryPlaylist from './LibraryPlaylist'; 
 import LibraryGridMenu from './LibraryGridMenu'; 
 import api from '../api'; 
-import mlApi, { getSongData, getArtistData } from '../apiMl'; // Import updated normalizer
+import mlApi, { getSongData, getArtistData } from '../apiMl'; 
 
 export default function LibraryDesign({ 
   token, 
@@ -12,7 +12,8 @@ export default function LibraryDesign({
   libraryView, 
   setLibraryView,
   likedSongsMap, 
-  handleLikeToggle 
+  handleLikeToggle,
+  currentSong
 }) {
   
   const [playlistTitle, setPlaylistTitle] = useState("Liked Songs");
@@ -53,34 +54,23 @@ export default function LibraryDesign({
           return;
         }
         try {
-          // --- FIX 1: 'GET /api/liked/' returns an array directly ---
           const response = await api.get('/api/liked/');
-          
-          // Use response.data, not response.data.songs
-          // Also, use the master getSongData function
           const likedSongs = (response.data || []).map(getSongData);
-          
           setPlaylistContent(likedSongs);
 
-          // const recResponse = await mlApi.get(`/recommend/${likedSongs[0].id}?limit=10`);
-          //   const recs = recResponse.data.similar_songs.map(getSongData);
-          //   setGridContent(recs.map(song => ({ type: 'song', data: song })));
+          const recommendResponse = await mlApi.get(`/recommend/${currentSong.id}?limit=12`);
+          const recommendGridSongs = (recommendResponse.data.similar_songs || []).map(getSongData);
+          setGridContent(recommendGridSongs.map(song => ({ type: 'song', data: song })));
 
-            
-          // Fetch popular songs (same as home page) instead of liked-based recommendations
-           const popularResponse = await mlApi.get('/popular?limit=30');
-           const popularSongs = popularResponse.data.map(getSongData);
-           setGridContent(popularSongs.map(song => ({ type: 'song', data: song })));
         } catch (err) {
           console.error("Failed to fetch liked songs or recommendations", err);
         }
 
       } else if (libraryView.type === 'genre') {
-        // ... (no changes in this block)
         setPlaylistTitle(libraryView.value);
         setGridTitle("Other Genres");
         try {
-          const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=100`);
+          const songsResponse = await mlApi.get(`/songs_by_genre?genre=${libraryView.value}&limit=50`);
           setPlaylistContent(songsResponse.data.map(getSongData));
           const genresResponse = await mlApi.get('/genres');
           const otherGenres = genresResponse.data.filter(g => g.toLowerCase() !== libraryView.value.toLowerCase());
@@ -90,12 +80,11 @@ export default function LibraryDesign({
         }
 
       } else if (libraryView.type === 'artist') {
-        // ... (no changes in this block)
         const artistName = libraryView.value;
         setPlaylistTitle(artistName);
         setGridTitle("Other Artists");
         try {
-          const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=100`);
+          const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=50`);
           const artistSongs = songsResponse.data
             .map(getSongData)
             .filter(song => song.artist.toLowerCase() === artistName.toLowerCase());
@@ -105,35 +94,67 @@ export default function LibraryDesign({
           console.error("Failed to fetch artist data", err);
         }
       
+     
       } else if (libraryView.type === 'recommended') {
-        // ... (no changes in this block)
         setPlaylistTitle("Recommended Songs");
-        setGridTitle("All Artists"); 
+        setGridTitle("More To Discover"); 
+        
+        if (!currentSong || !currentSong.id) {
+          
+          setPlaylistContent([]);
+          setGridContent([]);
+          console.warn("No current song to base recommendations on.");
+        } else {
+          try {
+           
+            const recResponse = await mlApi.get(`/recommend/${currentSong.id}?limit=60`);
+            
+            
+            const allRecs = (recResponse.data.similar_songs || []).map(getSongData);
+            
+           
+            setPlaylistContent(allRecs.slice(0, 48));
+            
+            
+            const gridSongs = allRecs.slice(48, 60);
+            setGridContent(gridSongs.map(song => ({ type: 'song', data: song })));
+
+          } catch (err) {
+            console.error("Failed to fetch dynamic recommendations", err);
+            setPlaylistContent([]);
+            setGridContent([]);
+          }
+        }
+      
+      } else if (libraryView.type === 'popular') {
+        setPlaylistTitle("Popular Songs"); 
+        setGridTitle("Popular Artists"); 
         try {
           const songsResponse = await mlApi.get('/popular?limit=50');
           setPlaylistContent(songsResponse.data.map(getSongData));
-          setGridContent(allArtists.slice(0, 50)); 
+          setGridContent(allArtists.slice(0, 10)); 
         } catch (err) {
-          console.error("Failed to fetch recommended/artist data", err);
+          console.error("Failed to fetch popular/artist data", err);
         }
       
       } else if (libraryView.type === 'artists_all') {
-        // ... (no changes in this block)
         setPlaylistTitle("All Artists");
         setPlaylistContent([]); 
         setGridTitle("All Artists");
-        setGridContent(allArtists.slice(0, 50));
+        setGridContent(allArtists.slice(0, 10));
       }
 
       setIsLoading(false);
     };
 
-    if (allArtists.length > 0 || (libraryView.type !== 'artist' && libraryView.type !== 'artists_all' && libraryView.type !== 'recommended')) {
+    
+    if (allArtists.length > 0 || (libraryView.type !== 'artist' && libraryView.type !== 'artists_all' && libraryView.type !== 'popular')) {
       fetchData();
     }
-  }, [libraryView, token, allArtists]); 
+  
+  }, [libraryView, token, allArtists, currentSong]); 
 
-  // Song click handler
+ 
   const handleSongClick = (song) => {
     if (!token) {
       alert("Please login to play music.");
@@ -144,7 +165,6 @@ export default function LibraryDesign({
     }
     setCurrentSong(song);
     
-    // --- FIX 2: Send correct keys to '/api/recent/add' ---
     if (token) {
       api.post('/api/recent/add', { 
           songId: song.id,
@@ -157,10 +177,10 @@ export default function LibraryDesign({
     }
   };
 
-  // Grid click handler
+  
   const handleGridClick = (item) => {
     if (item.type === 'song') {
-      handleSongClick(item.data); // This now works
+      handleSongClick(item.data); 
     } else if (item.type === 'genre') {
       setLibraryView({ type: 'genre', value: item.name });
     } else if (item.type === 'artist' || item.type === 'artist_name_only') {
@@ -170,9 +190,9 @@ export default function LibraryDesign({
   
   return (
     <div className='page-container'>
-      {/* <div className='page-head'>
+      <div className='page-head'>
         <h1>My Library</h1>
-      </div> */}
+      </div>
 
       <div className='playlist-grid'>
         <LibraryPlaylist
@@ -183,6 +203,7 @@ export default function LibraryDesign({
           likedSongsMap={likedSongsMap}
           handleLikeToggle={handleLikeToggle}
           customEmptyMessage={
+            libraryView.type === 'recommended' ? 'Play a song to see recommendations.' :
             libraryView.type === 'artists_all' ? 'Select an artist to see their songs.' : 'No songs found.'
           }
         />
