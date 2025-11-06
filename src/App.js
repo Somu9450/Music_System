@@ -131,46 +131,6 @@ function App() {
   const [likedSongsMap, setLikedSongsMap] = useState({}); 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchLiked = async () => {
-      if (token) {
-        try {
-          const response = await api.get('/api/liked/');
-
-          const songsFromDb = response.data;
-          
-          const likeMap = songsFromDb.reduce((acc, song) => {
-    
-            
-            acc[song.songId || song.track_id] = true; 
-            return acc;
-          }, {});
-          setLikedSongsMap(likeMap);
-        } catch (err) {
-          console.error("Failed to fetch liked songs status", err);
-        }
-      }
-      
-      else {
-        setLikedSongsMap({});
-      }
-    };
-
-    fetchLiked();
-
-    if (token) {
-        const decodedUser = jwtDecode(token);
-        if (decodedUser) {
-          setUsername(decodedUser.username); 
-        }
-      }
-      
-    else {
-        setUsername(null);
-      }
-  }, [token]);
-
-
   const handleLikeToggle = async (song, e) => {
     if (e) e.stopPropagation();
 
@@ -213,6 +173,46 @@ function App() {
       alert("Failed to update liked songs.");
     }
   };
+
+  useEffect(() => {
+    const fetchLiked = async () => {
+      if (token) {
+        try {
+          const response = await api.get('/api/liked/');
+
+          const songsFromDb = response.data;
+          
+          const likeMap = songsFromDb.reduce((acc, song) => {
+    
+            
+            acc[song.songId || song.track_id] = true; 
+            return acc;
+          }, {});
+          setLikedSongsMap(likeMap);
+        } catch (err) {
+          console.error("Failed to fetch liked songs status", err);
+        }
+      }
+      
+      else {
+        setLikedSongsMap({});
+      }
+    };
+
+    fetchLiked();
+
+    if (token) {
+        const decodedUser = jwtDecode(token);
+        if (decodedUser) {
+          setUsername(decodedUser.username); 
+        }
+      }
+      
+    else {
+        setUsername(null);
+      }
+  }, [token]);
+
 
 
   useEffect(() => {

@@ -22,25 +22,25 @@ export const getSongData = (mlSong) => {
 };
 
 
-export const getArtistData = async (limit = 20) => {
+export const getArtistData = async (limit = 100) => {
   try {
     // Fetch a larger list of popular songs to get a good variety of artists
-    const response = await mlApi.get('/popular?limit=5000');
+    const response = await mlApi.get('/popular?limit=2000');
     const songs = response.data;
 
     const artistMap = new Map();
 
-    for (const song of songs) {
+    for (const song of songs) { 
       if (song.artists && !artistMap.has(song.artists)) {
         artistMap.set(song.artists, {
           type: 'artist',
           name: song.artists,
-          image: song.img || '/logo192.png',
+          image: song.img,
         });
       }
     }
 
-    return Array.from(artistMap.values()).slice(0, limit);
+    return Array.from(artistMap.values()).slice(0, Math.random()*(limit-20)+20);
 
   } catch (err) {
     console.error("Failed to fetch and normalize artist data", err);

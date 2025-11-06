@@ -26,7 +26,7 @@ export default function LibraryDesign({
 
   useEffect(() => {
     const fetchAllArtists = async () => {
-      const artistList = await getArtistData(20);
+      const artistList = await getArtistData(100);
       setAllArtists(artistList);
     };
     fetchAllArtists();
@@ -40,7 +40,7 @@ export default function LibraryDesign({
         const otherArtists = allArtists.filter(
           a => a.name.toLowerCase() !== excludeName?.toLowerCase()
         );
-        return otherArtists.sort(() => 0.5 - Math.random()).slice(0, Math.ceil(Math.random()*(25-5)+1));
+        return otherArtists.sort(() => 0.5 - Math.random()).slice(0, Math.ceil(Math.random()*(100-5)+1));
       };
 
       if (libraryView.type === 'liked') {
@@ -58,7 +58,7 @@ export default function LibraryDesign({
           const likedSongs = (response.data || []).map(getSongData);
           setPlaylistContent(likedSongs);
 
-          const recommendResponse = await mlApi.get(`/recommend/${currentSong.id}?limit=16`);
+          const recommendResponse = await mlApi.get(`/recommend/${currentSong.id}?limit=20`);
           const recommendGridSongs = (recommendResponse.data.similar_songs || []).map(getSongData);
           setGridContent(recommendGridSongs.map(song => ({ type: 'song', data: song })));
 
@@ -85,7 +85,7 @@ export default function LibraryDesign({
         setPlaylistTitle(artistName);
         setGridTitle("Other Artists");
         try {
-          const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=50`);
+          const songsResponse = await mlApi.get(`/search?query=${artistName}&limit=100`);
           const artistSongs = songsResponse.data
             .map(getSongData)
             .filter(song => song.artist.toLowerCase() === artistName.toLowerCase());
@@ -126,13 +126,13 @@ export default function LibraryDesign({
           }
         }
       
-      } else if (libraryView.type === 'popular') {
+      } else if (libraryView.type === 'popular') {  
         setPlaylistTitle("Popular Songs"); 
         setGridTitle("Popular Artists"); 
         try {
-          const songsResponse = await mlApi.get('/popular?limit=50');
+          const songsResponse = await mlApi.get('/popular?limit=100');
           setPlaylistContent(songsResponse.data.map(getSongData));
-          setGridContent(allArtists.slice(0, Math.ceil(Math.random()*(25-5)+5))); 
+          setGridContent(allArtists.slice(0, Math.ceil(Math.random()*(100-10)+10))); 
         } 
         catch (err) {
           console.error("Failed to fetch popular/artist data", err);
@@ -174,8 +174,9 @@ export default function LibraryDesign({
           album: song.album_name || '',
           coverImage: song.image,
           preview: song.src
-        }).
-        catch(err => console.warn("Failed to add to recent", err.response?.data?.message || err.message));
+        })
+
+        .catch(err => console.warn("Failed to add to recent", err.response?.data?.message || err.message));
     }
   };
 

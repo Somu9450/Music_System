@@ -16,9 +16,9 @@ export default function PopularSongs({
     const fetchPopular = async () => {
       try {
         
-        const response = await mlApi.get('/popular?limit=20');
+        const response = await mlApi.get('/popular?limit=100');
         const normalized = response.data.map(getSongData);
-        setSongs(normalized);
+        setSongs(normalized.slice(Math.random(30-0)+0, Math.random(80-40)+40));
       } 
       catch (err) {
         console.error("Failed to fetch popular songs", err);
