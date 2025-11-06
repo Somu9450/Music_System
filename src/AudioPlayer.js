@@ -7,7 +7,6 @@ function AudioPlayer({ songSrc }) {
   
       <audio controls autoPlay key={songSrc}>
         <source src={songSrc} type="audio/mpeg" />
-        Your browser does not support the audio element.
       </audio>
     </div>
   );

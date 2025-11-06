@@ -9,7 +9,7 @@ import audientlogo from './assets/audientlogo.png'
 
 export default function TopHeader({ 
   isLoggedIn, 
-  username, // New prop
+  username, 
   onLogout, 
   setCurrentSong, 
   setIsAudioBarVisible,
@@ -21,23 +21,25 @@ export default function TopHeader({
   const navigate = useNavigate();
 
   const fetchSearch = useCallback(
-    debounce(async (query) => {
-      if (query.trim() !== '') {
+    debounce(async (search) => {
+      if (search.trim() !== '') {
         try {
           const response = await mlApi.get('/search', {
-            params: { query: query }
+            params: { query: search }
           });
           const normalizedResults = response.data.map(getSongData);
           setSearchResults(normalizedResults);
-        } catch (error) {
+        }
+        catch (error) {
           console.error("Search error:", error);
           setSearchResults([]);
         }
-      } else {
+      }
+      
+      else {
         setSearchResults([]);
       }
-    }, 300), 
-    []
+    }, 300), []
   );
 
   useEffect(() => {
@@ -52,8 +54,8 @@ export default function TopHeader({
     
     setCurrentSong(song);
     setIsAudioBarVisible(true);
-    setSearch('');
-    setSearchResults([]);
+    // setSearch('');
+    // setSearchResults([]);
     setIsSearchFocused(false);
   };
 

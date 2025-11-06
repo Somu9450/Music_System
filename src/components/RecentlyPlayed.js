@@ -12,12 +12,8 @@ export default function RecentlyPlayed({ setIsAudioBarVisible, setCurrentSong, t
         return;
       }
       try {
-        const response = await api.get('/api/recent/');
-        
-      
+        const response = await api.get('/api/recent/');   
         const songsFromDb = Array.isArray(response.data) ? response.data : [];
-
-      
         const normalized = songsFromDb.map(song => ({
 
           id: song.track_id || song._id, 
@@ -29,7 +25,8 @@ export default function RecentlyPlayed({ setIsAudioBarVisible, setCurrentSong, t
         }));
 
         setRecentSongs(normalized || []);
-      } catch (err) {
+      } 
+      catch (err) {
         console.error("Failed to fetch recent songs", err);
         setRecentSongs([]); 
       }

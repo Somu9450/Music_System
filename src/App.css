@@ -23,7 +23,6 @@
   scrollbar-width: none;
 }
 
-/* This is the new rule */
 .main-page-body {
   height: 100%;
   width: 100%;
@@ -80,18 +79,18 @@
   color: #b3b3b3;
 }
 
-/* Point 1: Style for the like icon in the player */
+
 .heart-icon-player {
   color: #aaa;
   cursor: pointer;
-  margin-left: 15px; /* Space from song details */
+  margin-left: 15px;
   font-size: 20px;
 }
 .heart-icon-player:hover {
   color: white;
 }
 .heart-icon-player.liked {
-  color: #1ed760; /* Liked color */
+  color: #1ed760; 
 }
 
 

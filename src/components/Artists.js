@@ -13,7 +13,7 @@ export default function Artists({ setLibraryView, setCurrentPage }) {
     const fetchArtists = async () => {
       try {
         // Fetch 15 artists dynamically
-        const data = await getArtistData(15);
+        const data = await getArtistData(25);
         setArtistData(data);
       } catch (err) {
         console.error("Failed to fetch artists", err);

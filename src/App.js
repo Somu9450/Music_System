@@ -60,7 +60,7 @@ function MainAppLayout({
   return (
     <div className="App">
       <TopHeader 
-        isLoggedIn={!!token} 
+        isLoggedIn={token} 
         username={username} 
         onLogout={onLogout} 
         setCurrentSong={setCurrentSong}
@@ -136,7 +136,9 @@ function App() {
       if (token) {
         try {
           const response = await api.get('/api/liked/');
-          const songsFromDb = Array.isArray(response.data) ? response.data : [];
+
+          const songsFromDb = response.data;
+          
           const likeMap = songsFromDb.reduce((acc, song) => {
     
             
@@ -147,10 +149,13 @@ function App() {
         } catch (err) {
           console.error("Failed to fetch liked songs status", err);
         }
-      } else {
+      }
+      
+      else {
         setLikedSongsMap({});
       }
     };
+
     fetchLiked();
 
     if (token) {
@@ -158,7 +163,9 @@ function App() {
         if (decodedUser) {
           setUsername(decodedUser.username); 
         }
-      } else {
+      }
+      
+    else {
         setUsername(null);
       }
   }, [token]);
@@ -173,17 +180,18 @@ function App() {
     }
 
     if (!song || !song.id) {
-      console.error("Cannot like a song with no ID", song);
+      console.error("Song ID error while Liking", song);
       return;
     }
 
     const trackId = song.id;
-    const isLiked = !!likedSongsMap[trackId];
+    const isLiked = likedSongsMap[trackId];
 
     try {
       if (isLiked) {
         await api.delete(`/api/liked/${trackId}`);
-      } else {
+      } 
+      else {
         await api.post('/api/liked/add', { 
             songId: trackId,           
             title: song.name,          
@@ -197,9 +205,10 @@ function App() {
       setLikedSongsMap(prev => ({ ...prev, [trackId]: !isLiked }));
 
       if (libraryView.type === 'liked') {
-        setLibraryView({ type: 'liked', refresh: Date.now() });
+        setLibraryView({ type: 'liked'});
       }
-    } catch (err) {
+    } 
+    catch (err) {
       console.error("Like error:", err.response ? err.response.data : err);
       alert("Failed to update liked songs.");
     }

@@ -30,7 +30,7 @@ export default function LibraryDesign({
       setAllArtists(artistList);
     };
     fetchAllArtists();
-  }, []);
+  }, [currentSong]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +40,7 @@ export default function LibraryDesign({
         const otherArtists = allArtists.filter(
           a => a.name.toLowerCase() !== excludeName?.toLowerCase()
         );
-        return otherArtists.sort(() => 0.5 - Math.random()).slice(0, 10);
+        return otherArtists.sort(() => 0.5 - Math.random()).slice(0, Math.ceil(Math.random()*(25-5)+1));
       };
 
       if (libraryView.type === 'liked') {
@@ -58,11 +58,12 @@ export default function LibraryDesign({
           const likedSongs = (response.data || []).map(getSongData);
           setPlaylistContent(likedSongs);
 
-          const recommendResponse = await mlApi.get(`/recommend/${currentSong.id}?limit=12`);
+          const recommendResponse = await mlApi.get(`/recommend/${currentSong.id}?limit=16`);
           const recommendGridSongs = (recommendResponse.data.similar_songs || []).map(getSongData);
           setGridContent(recommendGridSongs.map(song => ({ type: 'song', data: song })));
 
-        } catch (err) {
+        } 
+        catch (err) {
           console.error("Failed to fetch liked songs or recommendations", err);
         }
 
@@ -90,7 +91,9 @@ export default function LibraryDesign({
             .filter(song => song.artist.toLowerCase() === artistName.toLowerCase());
           setPlaylistContent(artistSongs);
           setGridContent(getOtherArtists(artistName));
-        } catch (err) {
+        }
+        
+        catch (err) {
           console.error("Failed to fetch artist data", err);
         }
       
@@ -103,24 +106,21 @@ export default function LibraryDesign({
           
           setPlaylistContent([]);
           setGridContent([]);
-          console.warn("No current song to base recommendations on.");
-        } else {
+          console.warn("No current song to fetch recommendations on.");
+        } 
+        else {
           try {
            
             const recResponse = await mlApi.get(`/recommend/${currentSong.id}?limit=60`);
-            
-            
             const allRecs = (recResponse.data.similar_songs || []).map(getSongData);
-            
-           
             setPlaylistContent(allRecs.slice(0, 48));
-            
-            
+    
             const gridSongs = allRecs.slice(48, 60);
             setGridContent(gridSongs.map(song => ({ type: 'song', data: song })));
 
-          } catch (err) {
-            console.error("Failed to fetch dynamic recommendations", err);
+          }
+          catch (err) {
+            console.error("Failed to fetch recommendations", err);
             setPlaylistContent([]);
             setGridContent([]);
           }
@@ -132,8 +132,9 @@ export default function LibraryDesign({
         try {
           const songsResponse = await mlApi.get('/popular?limit=50');
           setPlaylistContent(songsResponse.data.map(getSongData));
-          setGridContent(allArtists.slice(0, 10)); 
-        } catch (err) {
+          setGridContent(allArtists.slice(0, Math.ceil(Math.random()*(25-5)+5))); 
+        } 
+        catch (err) {
           console.error("Failed to fetch popular/artist data", err);
         }
       
@@ -141,7 +142,7 @@ export default function LibraryDesign({
         setPlaylistTitle("All Artists");
         setPlaylistContent([]); 
         setGridTitle("All Artists");
-        setGridContent(allArtists.slice(0, 10));
+        setGridContent(allArtists.slice(0, Math.ceil(Math.random()*(25-10)+10)));
       }
 
       setIsLoading(false);
@@ -173,7 +174,8 @@ export default function LibraryDesign({
           album: song.album_name || '',
           coverImage: song.image,
           preview: song.src
-        }).catch(err => console.warn("Failed to add to recent", err.response?.data?.message || err.message));
+        }).
+        catch(err => console.warn("Failed to add to recent", err.response?.data?.message || err.message));
     }
   };
 
@@ -181,9 +183,11 @@ export default function LibraryDesign({
   const handleGridClick = (item) => {
     if (item.type === 'song') {
       handleSongClick(item.data); 
-    } else if (item.type === 'genre') {
+    }
+    else if (item.type === 'genre') {
       setLibraryView({ type: 'genre', value: item.name });
-    } else if (item.type === 'artist' || item.type === 'artist_name_only') {
+    }
+    else if (item.type === 'artist' || item.type === 'artist_name_only') {
       setLibraryView({ type: 'artist', value: item.name });
     }
   };
@@ -191,7 +195,7 @@ export default function LibraryDesign({
   return (
     <div className='page-container'>
       <div className='page-head'>
-        <h1>My Library</h1>
+        {/* <h1>My Library</h1> */}
       </div>
 
       <div className='playlist-grid'>
